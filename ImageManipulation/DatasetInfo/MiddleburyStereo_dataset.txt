@@ -1,0 +1,7 @@
+Middlebury Stereo Dataset downloaded from http://vision.middlebury.edu/stereo/data/
+
+D. Scharstein and C. Pal. Learning conditional random fields for stereo.
+In IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
+
+H. Hirschmüller and D. Scharstein. Evaluation of cost functions for stereo matching.
+In IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR 2007), Minneapolis, MN, June 2007.
