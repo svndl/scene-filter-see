@@ -10,8 +10,8 @@
 function DepthLumCorr
 
     % Generate new set of modified images
-    path = '~/Documents/MATLAB/SONY/ImageManipulation/Images/Originals';
-    experiment_path = '~/Documents/MATLAB/SONY/PerceptualExperiment/Data';
+    path = '../Images/Originals';
+    experiment_path = '../../PerceptualExperiment/Data';
     
     listing = dir(path);
     %main experiment
