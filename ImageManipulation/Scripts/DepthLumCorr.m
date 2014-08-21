@@ -11,11 +11,11 @@ function DepthLumCorr
 
     % Generate new set of modified images
 
-    % path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
-    % experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
+    path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
 
-    path = '../Images/Originals';
-    experiment_path = '../../PerceptualExperiment/Data';
+%     path = '../Images/Originals';
+%     experiment_path = '../../PerceptualExperiment/Data';
     
     
     listing = dir(path);
@@ -135,18 +135,26 @@ function DepthLumCorr
     end
     
     %do scatter-plot
-    figure(1) 
-    xlabel('Luminance-depth correlation');
-    ylabel('Percent judged more 3D');
+    figure(1)
+    
+    subplot(2, 1, 1);
 
     scatter(trial_tp_ap(:, 1),trial_tp_ap(:, 2), 'Marker', '*'); hold on;
     scatter(trial_tp_orig(:, 1), trial_tp_orig(:, 2), 'Marker', 'o'); hold on;
     scatter(trial_orig_ap(:, 1), trial_orig_ap(:, 2), 'Marker', '+'); hold on;
-    
+    legend('tp-ap', 'tp-orig', 'orig-ap');
+    title('Experiment data');
+    xlabel('Luminance-depth correlation');
+    ylabel('Percent judged more 3D');
+        
+    subplot(2, 1, 2);
+
     scatter(calc_tp_ap(:, 1), calc_tp_ap(:, 2), 'Marker', '*'); hold on;
     scatter(calc_tp_orig(:, 1), calc_tp_ap(:, 2), 'Marker', 'o'); hold on;
     scatter(calc_orig_ap(:, 1), calc_tp_ap(:, 2), 'Marker', '+'); hold on;
-    
+    title('Original data');
+    xlabel('Calculated Luminance-depth correlation');
+    ylabel('Percent judged more 3D');
     legend('tp-ap', 'tp-orig', 'orig-ap');
 
     %save('images_analysis.mat', 'images');
