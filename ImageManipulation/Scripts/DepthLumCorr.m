@@ -11,11 +11,11 @@ function DepthLumCorr
 
     % Generate new set of modified images
 
-    path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
-    experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
+%     path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+%     experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
 
-%     path = '../Images/Originals';
-%     experiment_path = '../../PerceptualExperiment/Data';
+    path = '../Images/Originals';
+    experiment_path = '../../PerceptualExperiment/Data';
     
     
     listing = dir(path);
