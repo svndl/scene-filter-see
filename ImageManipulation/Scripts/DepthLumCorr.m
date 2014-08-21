@@ -26,7 +26,7 @@ function DepthLumCorr
     trial_tp_ap = zeros(nScenes, 2);
     trial_tp_orig = zeros(nScenes, 2);
     trial_orig_ap = zeros(nScenes, 2);
-
+    list_trial_scenes = cell(nScenes, 1);
     %read from mat folder
     try
         k = 1;
@@ -40,11 +40,13 @@ function DepthLumCorr
         calc_tp_ap = zeros(nImages, 2);
         calc_tp_orig = zeros(nImages, 2);
         calc_orig_ap = zeros(nImages, 2);
-
+        list_calc_scenes = cell(nImages, 1);
 
         for l = k:length(listing)
             idx = l - k + 1;
             image_path = strcat(path, '/', listing(l).name);
+            list_calc_scenes{idx} = listing(l).name;
+            
             images_tp = manipulateLuminance(image_path, 'tp');
             images_ap = manipulateLuminance(image_path, 'ap');
             %we'll only need original image,
@@ -74,6 +76,7 @@ function DepthLumCorr
             sn = find(ismember(data.scenesListSorted, listing(l).name));
             if (sn)
             %grab the relevant trials
+                list_trial_scenes{idx} = data.scenesListSorted{sn};
                 tp_apInds = data.trials.scene_number == sn & ...
                 trials.condA == find(ismember(data.conditionTypes, 'tp')) & ...
                 trials.condB == find(ismember(data.conditionTypes, 'ap'));
