@@ -100,7 +100,7 @@ function DepthLumCorr
                 trial_corr_tp_ap = unique(trials.AcorrMinusBcorr(tp_apInds));
                 trial_corr_tp_orig = unique(trials.AcorrMinusBcorr(tp_origInds));
                 trial_corr_orig_ap = unique(trials.AcorrMinusBcorr(orig_apInds));
-                                                
+                                       
                 
 %                 %save loaded data within our structure
 %                 images{idx}.trial.tp_ap = trial3d_tp_ap;

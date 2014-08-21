@@ -68,6 +68,10 @@ for exp = 1:2
             data.scenesListSorted = scenes_sort;
             data.scenesListSortedRvals = rvals_sort;
             
+            corrDat.corrOrig = corrDat.corrOrig(sort_ind);
+            corrDat.corrTP = corrDat.corrTP(sort_ind);
+            corrDat.corrAP = corrDat.corrAP(sort_ind);
+            
         end
         
         %for each scene
