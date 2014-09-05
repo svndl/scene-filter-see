@@ -12,7 +12,7 @@ function test_wPyr
     
     %path_img = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
     
-    %path_img = '../Images/Originals';
+    path_img = '../Images/Originals';
 
 
     listing = dir(path_img);
