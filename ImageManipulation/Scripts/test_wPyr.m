@@ -10,9 +10,9 @@ function test_wPyr
     
     %disp('toolbox is found');
     
-    %path_img = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    path_img = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
     
-    path_img = '../Images/Originals';
+    %path_img = '../Images/Originals';
 
 
     listing = dir(path_img);
@@ -24,9 +24,9 @@ function test_wPyr
               
         nImages = length(listing) - k + 1;
         
-        ld_corr = zeros(nImages, 3, 3);
-        ld_bands = zeros(9, nImages);
-        mean_lum = zeros(9, nImages);
+        ld_corr = zeros(nImages, 5, 3);
+        ld_bands = zeros(15, nImages);
+        mean_lum = zeros(15, nImages);
         for l = k:length(listing)
             
             idx = l - k + 1;
@@ -51,7 +51,7 @@ function test_wPyr
                     depth = wpyrBand(pyrD, pindD, lnum, bnum);
                     ldcorr = corr2(lum, depth);
                     ld_corr(idx, lnum, bnum) = ldcorr;
-                    band_idx = (lnum - 1)*nlevs + bnum;
+                    band_idx = (lnum - 1)*nbands + bnum;
                     ld_bands(band_idx, idx) = ldcorr;
                     mean_lum(band_idx, idx) = mean(mean(lum));
                 end
