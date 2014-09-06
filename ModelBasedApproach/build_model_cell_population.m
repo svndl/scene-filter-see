@@ -1,4 +1,4 @@
-function [model] = build_model_cell_population(popDensity,popGain,showPlots,R,N,feature)
+function [m] = build_model_cell_population(m)
 %
 % Model information carried in V1 complex cells as a function of Hebbian
 % learning
@@ -19,47 +19,34 @@ function [model] = build_model_cell_population(popDensity,popGain,showPlots,R,N,
 %            uniform variable, 'disp' for binocular disparity
 %
 
-addpath('./helper_functions_modeling/')
-
-
 % Visual feature properties in the environment
-[e_br,e_dk,e_all,rng]     = get_environ_stats(feature);         % environmental probabilities for increments and decrements
+[m.e_br,m.e_dk,m.e_all,m.rng]     = get_environ_stats(m.feature);         % environmental probabilities for increments and decrements
 
 % Model cell properties
-prefs                       = linspace(min(rng),max(rng),N);    % tuning preference locations
-spacing                     = range(prefs)/N;                   % spacing between cells
-cell_sigma                  = 0.55*spacing;                     % this sigma tiles spacing approx. uniformly in for Gaussian cells
-
+prefs                       = linspace(min(m.rng),max(m.rng),m.N);    % tuning preference locations
+spacing                     = range(prefs)/m.N;                   % spacing between cells
+m.cell_sigma                  = 0.55*spacing;                     % this sigma tiles spacing approx. uniformly in for Gaussian cells
 
 % Population type specific parameters                       
-if strcmp(popDensity,'uniform')  
-    pop = ones(1,length(rng))/length(rng);                      % uniform cell spacing   
-elseif strcmp(popDensity,'optimal')
-    pop = e_all;  end                                           % optimal cell spacing 
+if strcmp(m.popDensity,'uniform')  
+    m.pop = ones(1,length(m.rng))/length(m.rng);                      % uniform cell spacing   
+elseif strcmp(m.popDensity,'optimal')
+    m.pop = m.e_all;  end                                           % optimal cell spacing 
 
-warp                        = make_warping_function(pop,rng);   % Tuning preference warping - guided by the integral of the population prior
+warp                        = make_warping_function(m);   % Tuning preference warping - guided by the integral of the population prior
 
 % Generate tuning function for each cell
-for d = 1:N
+for d = 1:m.N
     
     pref                = prefs(d);                         % this cells original tuning preference           
-    prefs_new(d)        = interp1(warp,rng,pref);   % find inverse of cumsum distribution                                    % new peak location 
-    cell_response       = spacing * gaussian_tuning(pref,cell_sigma,warp);                             % Gaussian tuning function of cell
-    [g_br(d),g_dk(d)]   = set_response_gain(popGain,rng,e_all,e_br,e_dk,prefs_new(d));   % gain for population type
+    m.prefs_new(d)        = interp1(warp,m.rng,pref);   % find inverse of cumsum distribution                                    % new peak location 
+    cell_response       = spacing * gaussian_tuning(pref,m.cell_sigma,warp);                             % Gaussian tuning function of cell
+    [m.g_br(d),m.g_dk(d)]   = set_response_gain(m,m.prefs_new(d));   % gain for population type
 
-    r_br(d,:)        = R * g_br(d) * cell_response;                                                     % tuning function response ON
-    r_dk(d,:)        = R * g_dk(d) * cell_response;                                                     % tuning function response ON
+    m.r_br(d,:)        = m.R * m.g_br(d) * cell_response;                                                     % tuning function response ON
+    m.r_dk(d,:)        = m.R * m.g_dk(d) * cell_response;                                                     % tuning function response ON
 
 end
-
-model.feature = feature;
-model.rng = rng;
-model.e_br = e_br;
-model.e_dk = e_dk;
-model.e_all = e_all;
-
-model.r_br = r_br;
-model.r_dk = r_dk;
 
 
 % fnON                = compute_fisher(cell_firing_inc);              % Fisher information when stimulus is ON

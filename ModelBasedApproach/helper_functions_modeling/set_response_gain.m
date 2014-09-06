@@ -1,15 +1,15 @@
-function [g_br,g_dk] = set_response_gain(popGain,rng,e_br,e_dk,e_all,pref)
+function [g_br,g_dk] = set_response_gain(m,pref)
 
-if strcmp(popGain,'uniform');
+if strcmp(m.popGain,'uniform');
     
     g_br = 0.5;
     g_dk = 0.5;
     
-elseif strcmp(popGain,'optimal');
+elseif strcmp(m.popGain,'optimal');
     
-    p_br  = interp1(rng,e_br,pref);      % probability of bright and dark
-    p_dk  = interp1(rng,e_dk,pref);
-    p_all = interp1(rng,e_all,pref);
+    p_br  = interp1(m.rng,m.e_br,pref);      % probability of bright and dark
+    p_dk  = interp1(m.rng,m.e_dk,pref);
+    p_all = interp1(m.rng,m.e_all,pref);
     
     g_br = p_br/p_all;
     g_dk = p_dk/p_all;
