@@ -15,7 +15,7 @@ for p = 1:numel(im.rgc)
     disp = im.disparity(p);
     
     % clamp luminance to max value
-    lum = min([lum max_lum]);
+    lum = sign(lum).*min([abs(lum) max_lum]);
     
     % set cell population response bias based on relative luminance (bright
     % or dark) and luminance magnitude (weak to strong)
@@ -60,4 +60,4 @@ for p = 1:numel(im.rgc)
 
 end
 
-brain.volume = abs(quantile(brain.disparity,0.95) - quantile(brain.disparity,0.05));
+brain.volume = abs(quantile(brain.disparity(:),0.95) - quantile(brain.disparity(:),0.05));
