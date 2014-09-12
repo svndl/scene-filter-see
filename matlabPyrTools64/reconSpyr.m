@@ -27,6 +27,12 @@ function res = reconSpyr(pyr, pind, filtfile, edges, levs, bands)
 
 %%------------------------------------------------------------
 %% DEFAULTS:
+% Deterimine whether a MEX version of upConv is available
+ is_mex = true;
+ finfo = functions( @upConv );
+ if( strcmp( finfo.file((end-2):end), '.m') )
+     is_mex = false;
+ end
 
 if (exist('filtfile') ~= 1)
   filtfile = 'sp1Filters';
@@ -90,7 +96,10 @@ end
 res = upConv(res1, lo0filt, edges);
 
 %% residual highpass subband
-if any(levs == 0)
-   upConv( subMtx(pyr, pind(1,:)), hi0filt, edges, [1 1], [1 1], size(res), res);
-end
- 
+  if any(levs == 0)
+    if( is_mex )
+         upConv( subMtx(pyr, pind(1,:)), hi0filt, edges, [1 1], [1 1], size(res), res);
+    else
+        res = upConv( subMtx(pyr, pind(1,:)), hi0filt, edges, [1 1], [1 1], size(res), res);
+    end
+  end
