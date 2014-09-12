@@ -1,21 +1,27 @@
-% determine the lum-depth correlation of all images (right ones)
-% get a list of image directories
-% load images (ap, orig, tp) and depth maps
-% calculate the difference between lum-depth correlation between orig - ap,
-% tp - ap, tp - orig.
-% calculate the %of "more 3d" from perceptual data in the same order  
-% result: 2 vector: scene differences/preceptual diferences
-% scatter plot, correlation
-
 function DepthLumCorr
+% This function loads the results of preceptual experiment
+% and plots subject's responses as a function of relative 
+% luminance-depth correlatoin in manipulated images 
+%
 
- 
-%     path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
-%     experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
-
-    path = '../Images/Originals';
-    experiment_path = '../../PerceptualExperiment/Data';
+    %absolute path should always work
+    %check if relative location also works
     
+    abs_path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    abs_experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
+
+    rel_path = '../Images/Originals';
+    rel_experiment_path = '../../PerceptualExperiment/Data';
+    
+    %figure out path locations
+    if(exist(rel_path, 'dir'))
+        path = rel_path;
+        experiment_path = rel_experiment_path;
+    else
+        path = abs_path;
+        experiment_path = abs_experiment_path;
+    end
+        
     
     listing = dir(path);
     

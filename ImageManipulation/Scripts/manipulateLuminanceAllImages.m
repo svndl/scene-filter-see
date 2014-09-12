@@ -4,7 +4,15 @@ function [] = manipulateLuminanceAllImages()
 % contained in the Images/Originals directory
 
 % Emily Cooper, Stanford University 2014
-    path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    abs_path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    rel_path = '../Images/Originals';
+    
+    %figure out path locations
+    if(exist(rel_path, 'dir'))
+        path = rel_path;
+    else
+        path = abs_path;
+    end
     
     %store luminance/depth correlation of original and manipulation in a mat file
     calcAndStoreCorrelations = 0;
