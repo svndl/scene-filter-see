@@ -1,18 +1,22 @@
-function [g_br,g_dk] = set_response_gain(env,m,pref)
-
-if strcmp(m.popGain,'uniform');
+function gain = set_response_gain(popGain, env, pref)
+% returns response gain depending on selected population gain
+    switch popGain
+        
+        case 'uniform'    
+            g_bright = 0.5*ones(1, length(prefs));
+            g_dark = 0.5*ones(1, length(prefs));
     
-    g_br = 0.5;
-    g_dk = 0.5;
+        case 'optimal'
+            p_br  = interp1(env.rng, env.bright, pref);     
+            p_dk  = interp1(env.rng, env.dark, pref);
+            p_all = interp1(env.rng, env.all, pref);
     
-elseif strcmp(m.popGain,'optimal');
-    
-    p_br  = interp1(m.rng,env.br,pref);      % probability of bright and dark
-    p_dk  = interp1(m.rng,env.dk,pref);
-    p_all = interp1(m.rng,env.all,pref);
-    
-    g_br = p_br/p_all;
-    g_dk = p_dk/p_all;
-    
+            g_bright = p_br./p_all;
+            g_dark = p_dk./p_all;
+        otherwise
+           g_bright = 0;
+           g_dark = 0;
+    end
+    gain.bright = g_bright;
+    gain.dark = g_dark;
 end
-   

@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [] = calcAndStoreCorrelations(image)
+function calcAndStoreCorrelations(image)
 
     %store the original and manipulated luminance/depth correlations
     imY = rgb2gray(image.imRGB.^2.2);
