@@ -20,4 +20,3 @@ function gain = set_response_gain(popGain, env, pref)
     gain.bright = g_bright;
     gain.dark = g_dark;
 end
-   

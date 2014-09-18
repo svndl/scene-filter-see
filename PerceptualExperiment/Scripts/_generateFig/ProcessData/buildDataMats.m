@@ -80,7 +80,7 @@ for exp = 1:2
             scene = dat.conds(c).scene;
             
             %find index of this scene in sorted correlation list
-            scene_ind = find(ismember(scenes_sort,scene));
+            scene_ind = find(ismember(scenes_sort,['../Images/Originals/' scene ]));
             
             if ~isempty(scene_ind)
                 

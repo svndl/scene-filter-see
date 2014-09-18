@@ -15,7 +15,7 @@ function [] = manipulateLuminanceAllImages()
     end
     
     %store luminance/depth correlation of original and manipulation in a mat file
-    calcAndStoreCorrelations = 0;
+    calcAndStoreCorrelations = 1;
     manipulationFlags = {'tp', 'ap'};
     listing = dir(path);
 
