@@ -10,7 +10,9 @@ function saveImages(image, storeCorrelation)
     end
     
     %save extra intermediate images
-    mkdir(extra_dir)
+    if (~exist(extra_dir, 'dir'))
+        mkdir(extra_dir);
+    end
     imwrite(image.imV.^(1/2.2),[image.savepath 'right_Voriginal.png']);
     imwrite(image.imVnew.^(1/2.2),[image.savepath 'right_V' image.flag '.png']);
 
