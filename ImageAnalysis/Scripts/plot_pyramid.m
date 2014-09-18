@@ -53,8 +53,8 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     %figuring where to put text
     [minX, minInd] = min(dataX);
     %minYX = dataY(minInd);
-    
-    %determine the range we have  
+      
+    % range for text was determined empirically
     deltaX = 0.01;
     tx = minX + deltaX;
     ty1 = 0.45;
@@ -62,3 +62,4 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     
     text(tx, ty1, strcat('p = ', num2str(pv)), 'FontSize',18);
     text(tx, ty2, strcat('r = ', num2str(rho)), 'FontSize',18);
+end
