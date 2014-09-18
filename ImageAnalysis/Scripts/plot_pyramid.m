@@ -8,18 +8,19 @@ function f = plot_pyramid(pyr, dataX0, dataY, pyrname)
     pyrH = size(p1, 1);
     
     f = figure('Name', pyrname, 'visible', 'off', 'units','normalized','outerposition',[0 0 1 1]);
-    xflabel = 'Relative correlatoin at level ';
+    scales = {'fine scale', 'mid scale1', 'mid scale 2', 'coarse scale 1', 'coarsest scale 2'};
+    xflabel = 'Relative correlatoin at ';
     yflabel = '% more 3d';
     fmarkers = {'*', 'o', '+'};
     legend = {'tp-ap', 'tp-orig', 'orig-ap'};
-    orig_label.x = 'Relative correlatoin';
+    orig_label.x = 'Relative correlatoin, original image';
     orig_label.y = yflabel;
     orig_label.legend = legend;
     %
     plot_level(dataX0, dataY, fmarkers, orig_label, 1);
     
     for h = 1:pyrH
-        axis_labels.x = strcat(xflabel, '#', num2str(h));
+        axis_labels.x = strcat(xflabel, scales{h});
         axis_labels.y = yflabel;
         axis_labels.legend = legend;
         plot_level(p1(h, :)', dataY, fmarkers, axis_labels, h + 1);
@@ -36,7 +37,7 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     for n = 1:nsets
         sIdx = npoints*(n - 1) + 1;
         eIdx = npoints*n;
-        h = scatter(dataX(sIdx:eIdx), dataY(sIdx:eIdx), fmarkers{n}); hold on
+        h = scatter(dataX(sIdx:eIdx), dataY(sIdx:eIdx), fmarkers{n}, 'LineWidth', 2); hold on
     end
     xlabel(axis_labels.x); hold on;
     ylabel(axis_labels.y); hold on;            
@@ -47,11 +48,11 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     [rho, pv] = corr(dataX, dataY);  
 
     [yfit, ~] = polyval(p, dataX ,S, mu);
-    plot(dataX, yfit,':k','LineWidth', 1);
+    plot(dataX, yfit,':k','LineWidth', 2);
     
     %figuring where to put text
     [minX, minInd] = min(dataX);
-    minYX = dataY(minInd);
+    %minYX = dataY(minInd);
     
     %determine the range we have  
     deltaX = 0.01;
@@ -59,6 +60,5 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     ty1 = 0.45;
     ty2 = 0.47;
     
-    text(tx, ty1, strcat('p = ', num2str(pv)));
-    text(tx, ty2, strcat('\rho = ', num2str(rho)));
-end
+    text(tx, ty1, strcat('p = ', num2str(pv)), 'FontSize',18);
+    text(tx, ty2, strcat('r = ', num2str(rho)), 'FontSize',18);
