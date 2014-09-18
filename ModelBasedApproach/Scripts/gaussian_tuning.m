@@ -8,5 +8,5 @@ function resp = gaussian_tuning(mu, s, x)
     % i-th row will be x - mu(i)    
     % evaluate gaussian distribution with mean u and sigma s over supplied range
     
-    resp = 1/( s*sqrt(2*pi) )*exp(0.5*((x1 - mu1)./s ).^2);
+    resp = 1/( s*sqrt(2*pi) )*exp(-0.5*((x1 - mu1)./s ).^2);
 end

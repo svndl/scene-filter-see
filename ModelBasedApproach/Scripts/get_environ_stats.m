@@ -11,7 +11,7 @@ function env = get_environ_stats(feature, numsamples)
             e_dark = e_bright;                                            
         case 'disp'
         % binocular disparities in the Van Hateren dataset
-            load('environ_stats.mat');
+            load('nss_basic.mat');
             %numsamples = 1001;        
             disp_limit = 60; %(arminutes)
             x = linspace(-disp_limit, disp_limit, numsamples);         
@@ -33,4 +33,5 @@ function env = get_environ_stats(feature, numsamples)
     env.bright = e_bright;
     env.dark = e_dark;
     env.all = env.bright + env.dark;
+    env.feature = 'feature';
 end

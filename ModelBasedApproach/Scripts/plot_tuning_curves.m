@@ -4,16 +4,16 @@ function [] = plot_tuning_curves(model)
 for n = 1:size(model.response,1)
     
     subplot(3,2,3); hold on;
-    plot(model.rng,model.g_br(n).*model.response(n,:),'r-','linewidth',1)
+    plot(model.env.rng,model.gain.bright(n).*model.response(n,:),'r-','linewidth',1)
     xlabel('Binocular Disparity (arcmin)');
     ylabel('ON response');
-    xlim([min(model.rng) max(model.rng)]);
+    xlim([min(model.env.rng) max(model.env.rng)]);
     
     subplot(3,2,5); hold on;
-    plot(model.rng,model.g_dk(n).*model.response(n,:),'b-','linewidth',1)
+    plot(model.env.rng, model.gain.dark(n).*model.response(n,:),'b-','linewidth',1)
     xlabel('Binocular Disparity (arcmin)');
     ylabel('OFF response');
-    xlim([min(model.rng) max(model.rng)]);
+    xlim([min(model.env.rng) max(model.env.rng)]);
 
 end
 

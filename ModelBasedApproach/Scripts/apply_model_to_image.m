@@ -1,4 +1,4 @@
-function brain = apply_model_to_image(m, im)
+function brain = apply_model_to_image(model, im)
 
 
 %initialize brain disparity response
@@ -22,41 +22,43 @@ for p = 1:numel(im.rgc)
     
     % gain for each cell is a weighted combination of the biased
     % environmental gains and an unbiased set of gains
-    if lum > 0;
+    if lum > 0
         
         % concat biased and unbiased responses
-        resp_cat = [m.g_br ; repmat(mean(m.g_br),size(m.g_br))];
+        b = model.resp_bright;
+        
+        resp_cat = [b ; repmat(mean(b), [size(b, 1), 1])];
         % concat luminance magnitude based weights
-        weight_cat = [repmat(lum/max_lum,size(m.g_br)) ; repmat(1 - (lum/max_lum),size(m.g_br))];
+        l = lum/max_lum;
+        weight_cat = [repmat(l, size(b)); repmat(1 - l, size(b))];
+        gain = wmean(resp_cat, weight_cat);
         
-        gain = wmean(resp_cat,weight_cat);
-        
-    elseif lum < 0;
-        
+    elseif lum < 0
+        d = model.resp_dark;
         % concat biased and unbiased responses
-        resp_cat = [m.g_dk ; repmat(mean(m.g_dk),size(m.g_dk))];
+        resp_cat = [ d; repmat(mean(d), [size(d, 1), 1])];
         % concat luminance magnitude based weights
-        weight_cat = [repmat(abs(lum)/max_lum,size(m.g_dk)) ; repmat(1 - (abs(lum)/max_lum),size(m.g_dk))];
+        l = abs(lum)/max_lum;
+        weight_cat = [repmat(l, size(d)); repmat(1 - l, size(d))];
+        gain = wmean(resp_cat, weight_cat);
         
-        gain = wmean(resp_cat,weight_cat);
+    elseif lum == 0
         
-    elseif lum == 0;
-        
-        gain = zeros(size(m.response));
+        gain = zeros(size(model.response));
         
     end
     
     % get response magnitude for each cell
-    for n = 1:m.N
+    for n = 1:model.N
         
-        cell_resp   = gain(n).*m.response(n,:);
-        resp        = interp1(m.rng,cell_resp,disp);
+        cell_resp   = gain(n).*model.response(n,:);
+        resp        = interp1(model.env.rng, cell_resp, disp);
         popresp(n)  = resp;
     end
 
-    val = interp1(m.prefs_new,popresp,m.rng);
+    val = interp1(model.preferences, popresp, model.env.rng);
 
-    brain.disparity(p) = wmean(m.rng(~isnan(val)),val(~isnan(val)));
+    brain.disparity(p) = wmean(model.env.rng(~isnan(val)),val(~isnan(val)));
 
 end
 

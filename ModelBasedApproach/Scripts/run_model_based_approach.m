@@ -9,7 +9,7 @@ for m = 1:5
     % perceptual rating for this image comparison
     more3D(m) = rand;
     
-    brain1 = predict_model_response([],1,1,0);
+    brain1 = predict_model_response([],1,1,1);
     brain2 = predict_model_response([],1,1,0);
     
     moreBrainResponse(m) = brain1.volume - brain2.volume;

@@ -1,4 +1,4 @@
-function model = build_model_cell_population(env, params)
+function model = build_model_cell_population(env, model)
 %
 % Model information carried in V1 complex cells as a function of Hebbian
 % learning
@@ -15,15 +15,15 @@ function model = build_model_cell_population(env, params)
     %% Model cell properties
     
     % tuning preference locations
-    prefs = linspace(min(env.rng), max(env.rng), params.N);   
+    prefs = linspace(min(env.rng), max(env.rng), model.N);   
     % spacing between cells    
-    spacing = range(prefs)/params.N;                   
+    spacing = range(prefs)/model.N;                   
     % this sigma tiles spacing approx. uniformly in for Gaussian cells
     cell_sigma = 0.55*spacing;                     
 
 
     %% Population type specific parameters    
-    switch params.popDensity
+    switch model.popDensity
         case 'uniform'  
             pop = ones(1, length(env.rng))/length(env.rng);                     
         case 'optimal'
@@ -35,17 +35,15 @@ function model = build_model_cell_population(env, params)
 
     new_prefs = interp1(warp, env.rng, prefs);
     cell_response = spacing * gaussian_tuning(prefs, cell_sigma, warp); 
-    gain = set_response_gain(params.popGain, env, new_prefs);
-    r_bright = params.R *repmat(gain.bright, length(warp), 1)'.*cell_response; 
-    r_dark = params.R *repmat(gain.dark, length(warp), 1)'.*cell_response;
+    gain = set_response_gain(model.popGain, env, new_prefs);
+    resp_bright = model.R *repmat(gain.bright, length(warp), 1)'.*cell_response; 
+    resp_dark = model.R *repmat(gain.dark, length(warp), 1)'.*cell_response;
     
     
-    model.feature = params.feature;
-    model.rng = env.rng;
-    model.e_bright = env.bright;
-    model.e_dark = env.dark;
-    model.e_all = env.all;
-
-    model.r_bright = r_bright;
-    model.r_dark = r_dark;
+    model.env = env;
+    model.gain = gain;
+    model.response = model.R*cell_response;
+    model.preferences = new_prefs;
+    model.resp_bright = resp_bright;
+    model.resp_dark = resp_dark;
 end

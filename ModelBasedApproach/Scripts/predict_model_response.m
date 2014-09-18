@@ -14,7 +14,7 @@ function [brain] = predict_model_response(image_name, testing, picture, plot)
     % env.rng 
     
     numsamples = 1001;
-    env = get_environ_stats(params.feature, numsamples);         
+    env = get_environ_stats(env.feature, numsamples);         
 
     % set up brain model to use
 
@@ -23,7 +23,7 @@ function [brain] = predict_model_response(image_name, testing, picture, plot)
     model.popDensity  = 'optimal';                        % cell population density ('uniform' or 'optimal'
     model.popGain     = 'optimal';                        % cell population response gain ('uniform' or 'optimal')
 
-    model = build_model_cell_population(env,model);
+    model = build_model_cell_population(env, model);
 
     % load in image and disparity map
 
@@ -65,11 +65,11 @@ if(plot)
     plot_tuning_curves(model)
     
     subplot(3,2,1); hold on; title('Environmental Probabilities');
-    plot(env.rng,env.br,'r');
-    plot(env.rng,env.dk,'b');
+    plot(env.rng,env.bright,'r');
+    plot(env.rng,env.dark,'b');
     xlabel('Binocular Disparity (arcmin)');
     ylabel('Probability ON/OFF');
-    xlim([min(model.rng) max(model.rng)]);
+    xlim([min(model.env.rng) max(model.env.rng)]);
     
     subplot(3,2,4); hold on; xlabel('Image');
     imagesc(image.rgc);
