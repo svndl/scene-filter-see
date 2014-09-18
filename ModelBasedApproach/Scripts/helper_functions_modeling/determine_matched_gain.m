@@ -1,23 +1,26 @@
-function [wOFF, wON, esr] = determine_matched_gain(pON,pONopt,popGain)
+function [w_off, w_on, esr] = determine_matched_gain(p_on, p_on_opt, popGain)
 
-rC = 1; % desired complex cell spike rate
+    % desired complex cell spike rate
+    rC = 1; 
 
-pOFF = 1 - pON;
+    p_off = 1 - p_on;
+    
+    switch popGain
 
-if popGain == 2
-    % weight function that is proportional to learned probability
-    wON = 2/(((1-pONopt)/pONopt) + 1);
-    wOFF = 2 - wON;
-elseif popGain == 1
-    wON = 1;
-    wOFF = 1;
-end
+        case 2
+            % weight function that is proportional to learned probability
+            w_on = 2/((1 - p_on_opt)/p_on_opt + 1);
+            w_off = 2 - w_on;
+        case 1
+            w_on = 1;
+            w_off = 1;
+        otherwise
+            w_on = 0;
+            w_off = 0;
+    end
 
-rON = 1;
-
-rOFF = wON./wOFF;
-
-esr = pOFF*(rOFF + wOFF.*rOFF) + pON*(rON + wON.*rON);
-
-esr = esr/(rC*2);
+    r_on = 1;
+    r_off = w_on./w_off;
+    esr = p_off*(r_off + w_off.*r_off) + p_on*(r_on + w_on.*r_on);
+    esr = esr/(rC*2);
 

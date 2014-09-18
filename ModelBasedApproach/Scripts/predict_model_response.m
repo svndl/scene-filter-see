@@ -1,26 +1,31 @@
-function [brain] = predict_model_response(image_name,testing,picture,plot)
+function [brain] = predict_model_response(image_name, testing, picture, plot)
 
-addpath(genpath('..'));
-%testing  = 1;
-%picture  = 1;
+    %testing  = 1;
+    %picture  = 1;
 
-% load in natural scene statistics
+    % load in natural scene statistics
+    env.feature      = 'disp';
+    %% Visual feature properties in the environment   
+    % environmental probabilities for increments and decrements
+    % env is a structure with the folloving fields:
+    % env. bright
+    % env. dark
+    % env.all
+    % env.rng 
+    
+    numsamples = 1001;
+    env = get_environ_stats(params.feature, numsamples);         
 
-env.feature      = 'disp';
+    % set up brain model to use
 
-% Visual feature properties in the environment
-[env]     = get_environ_stats(env);         % environmental probabilities for increments and decrements
+    model.N           = 120;                              % number of neurons for simulation
+    model.R           = 50;                               % mean population firing rate
+    model.popDensity  = 'optimal';                        % cell population density ('uniform' or 'optimal'
+    model.popGain     = 'optimal';                        % cell population response gain ('uniform' or 'optimal')
 
-% set up brain model to use
+    model = build_model_cell_population(env,model);
 
-model.N           = 120;                              % number of neurons for simulation
-model.R           = 50;                               % mean population firing rate
-model.popDensity  = 'optimal';                        % cell population density ('uniform' or 'optimal'
-model.popGain     = 'optimal';                        % cell population response gain ('uniform' or 'optimal')
-
-model = build_model_cell_population(env,model);
-
-% load in image and disparity map
+    % load in image and disparity map
 
 if(testing)
     

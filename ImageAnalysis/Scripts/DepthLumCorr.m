@@ -112,22 +112,19 @@ function DepthLumCorr
                 trial_tp_orig(idx, 2) = trial3d_tp_orig;
                 trial_orig_ap(idx, 1) = trial_corr_orig_ap;
                 trial_orig_ap(idx, 2) = trial3d_orig_ap;
-%                 disp(strcat(list_trial_scenes{idx}, ...
-%                     '     ', num2str(trial_corr_tp_ap), ...
-%                     '     ', num2str(trial_corr_tp_orig), ...
-%                     '     ', num2str(trial_orig_ap), ...
-%                     '     ', num2str(calc_tp_ap), ...
-%                     '     ', num2str(calc_tp_orig), ...
-%                     '     ', num2str(calc_orig_ap)));
             end
         end
     catch err
-        disp(strcat('DepthLumCorr:Error loading ', path));
+        disp('DepthLumCorr:Error loading ');
         disp(err.message);
         disp(err.cause);
         disp(err.stack(1));
         disp(err.stack(2));
     end
+    
+    save('trial_tp_ap.mat', 'trial_tp_ap');
+    save('trial_tp_orig.mat', 'trial_tp_orig');
+    save('trial_orig_ap.mat', 'trial_orig_ap');
     
     %do scatter-plot
     figure(1);

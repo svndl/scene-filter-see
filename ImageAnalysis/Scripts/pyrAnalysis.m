@@ -1,8 +1,7 @@
-function pyrAnalysis
+function pyr = pyrAnalysis(image, max_levels, pyramids)
 % Function builds three pyramids(laplacian, wavelet, steerable)
-% for each image/depth map in path_src, calculates depth-luminance
-% correlation and mean luminance at each level (from coarse to blur). 
-% For each image we generate two scatter plots and save them in path_save.
+% for image.imRGB, then reconstructs at each level and correlates with the depth map
+% returns structure pyr.ld_corr(nPyramids, nLevels), pyr.mean_lum, pyr.sf
 
 
     %% check if toolbox is loaded
@@ -12,139 +11,89 @@ function pyrAnalysis
     
     disp('WARNING: this function requires patched reconSpyr.m. Please unlink other versions of matlabPyrTools');
     
-    %absolute/relative path
-    abs_path_src = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
-    abs_path_res = '~/Documents/MATLAB/scene-filter-see/ImageAnalysis/Result/';
-    
-    rel_path_src = '../../ImageManipulation/Images/Originals';
-    rel_path_res = '../../ImageAnalysis/Result/';
-
-    %figure out path locations
-    if(exist(rel_path_src, 'dir'))
-        path_src = rel_path_src;
-        path_save = rel_path_res;
-    else
-        path_src = abs_path_src;
-        path_save = abs_path_res;
-    end
-    
-    if ~exist(path_save, 'dir')
-        mkdir(savepath);
-    end
-
-
-    listing = dir(path_src);
     try
-        k = 1;
-        while(strcmp(listing(k).name(1),'.'))
-            k = k + 1;
-        end
-              
+        nPyrs = numel(pyramids);
         
-        for l = k:length(listing)
-            
-            %idx = l - k + 1;
-            disp(strcat('Processing ', listing(l).name));
-            image_path = strcat(path_src, '/', listing(l).name);
-            image = loadImages(image_path);
-            im = rgb2gray(image.imRGB);
-            
-            %use only valid (~NaN) values for conv            
-            validIdx = ~isnan(image.imZOrig);
-            depth = image.imZOrig(validIdx);
-            imSubSample = 0;
-            
-            %laplacian, wavelet, steerable pyramids
-            [lpyrIm, lpindIm] = buildLpyr(im, 5 - imSubSample);            
-            [wpyrIm, wpindIm] = buildWpyr(im, 5 - imSubSample);
-            [spyrIm, spindIm] = buildSpyr(im, 5 - imSubSample);
-            
-            %heigts (each pyramid might have a different height) 
-            heightL = floor(lpyrHt(lpindIm));
-            heightW = floor(wpyrHt(wpindIm));
-            heightS = floor(spyrHt(spindIm));
-            
-            %arrays for storing correlation values
-            ld_corr_L = NaN(heightL, 1);
-            mean_lum_L = zeros(heightL, 1);
-            sf_L = zeros(heightL, 1);
-            
-            ld_corr_W = NaN(heightW, 1);
-            mean_lum_W = zeros(heightW, 1);
-            sf_W = zeros(heightW, 1);
-            
-            ld_corr_S = NaN(heightS, 1);
-            mean_lum_S = zeros(heightS, 1);
-            sf_S = zeros(heightS, 1);
-                       
-            %% Original             
-            sf_orig = 1/size(im, 2);            
-            ld_corr_orig = corr(depth, im(validIdx));           
-            mean_lum_orig = mean(mean(normM(im)));
-
-            %% Laplacian
-            for levL = 1:heightL
-                    lum = (reconLpyr(lpyrIm, lpindIm, levL));
-                    
-                    ld_corr_L(levL) = corr(depth, lum(validIdx));
-                    mean_lum_L(levL) = mean(mean(normM(lum)));
-                    sf_L(levL) = 1/lpindIm(levL, 2);
-            end
-            %% Wavelet
-            for levW = 1:heightW
-                    lum = reconWpyr(wpyrIm, wpindIm, 'qmf9', 'reflect1', levW, 'all');
-
-                    ld_corr_W(levW) = corr(depth, lum(validIdx));                    
-                    mean_lum_W(levW) = mean(mean(normM(lum)));
-                    sf_W(levW) = 1/size(wpyrBand(wpyrIm, wpindIm, levW), 2);
-            end
-            %% Steerable
-            for levS = 1:heightS
-                    lum = reconSpyr(spyrIm, spindIm, 'sp1Filters', 'reflect1', levS, 'all');
-                    
-                    ld_corr_S(levS) = corr(depth, lum(validIdx));                    
-                    mean_lum_S(levS) = mean(mean(normM(lum)));
-                    sf_S(levS) = 1/size(spyrBand(spyrIm, spindIm, levS), 2);
-            end
-            
-            %% display depth/luminance corr and mean luminance
-            f = figure('Name', listing(l).name, 'visible', 'off');
-                       
-            f1 = subplot(2, 1, 1);
-            title(f1, 'Luminance-depth correlation at different scales'); hold on;
-            xlabel(f1, 'spatial frequency, fine to coarse'); hold on;
-            ylabel(f1, 'Luminance-depth correlation'); hold on;
-            
-            validL = ~isnan(ld_corr_L);
-            validW = ~isnan(ld_corr_W);
-            validS = ~isnan(ld_corr_S);
-            scatter(sf_orig, ld_corr_orig, 'filled', 'Marker', '^'); hold on;
-            scatter(sf_L(validL), ld_corr_L(validL), 'Marker', '*'); hold on;
-            scatter(sf_W(validW), ld_corr_W(validW), 'Marker', 'o'); hold on;
-            scatter(sf_S(validS), ld_corr_S(validS), 'Marker', '+'); hold on;
-            legend('Original', 'Laplacian', 'Wavelet', 'Steerable');
+        %arrays for storing correlation values
+        pyr.ld_corr = NaN(nPyrs, max_levels); 
+        pyr.mean_lum = zeros(nPyrs, max_levels);        
+        pyr.sf = zeros(nPyrs, max_levels);            
         
-                       
-            f2 = subplot(2, 1, 2);
-            title(f2, 'Mean luminance at different scales'); hold on;
-            xlabel(f2, 'spatial frequency, fine to coarse'); hold on;
-            ylabel(f2, 'Mean'); hold on;
-
-            scatter(sf_orig, mean_lum_orig, 'filled', 'Marker', '^'); hold on;
-            scatter(sf_L, mean_lum_L, 'Marker', '*'); hold on;
-            scatter(sf_W, mean_lum_W, 'Marker', 'o'); hold on;
-            scatter(sf_S, mean_lum_S, 'Marker', '+'); hold on;
-            legend('Original', 'Laplacian', 'Wavelet', 'Steerable');
+        im = rgb2gray(image.imRGB.^(2.2));
+        %use only valid (~NaN) values for conv            
+        validIdx = ~isnan(image.imZOrig);
+        depth = image.imZOrig(validIdx);
+          
+        %% build/reconstruct in laplacian, wavelet, steerable pyramids
+        for p = 1:nPyrs
+            type = pyramids{p};
+            [pIm, pInd] = buildPyr(type, im, max_levels);
+            height = pyrHeight(type, pInd);
+            for level = 1:height
+                lum = reconPyr(type, pIm, pInd, level);
+                pyr.ld_corr(p, level) = corr(depth, lum(validIdx));
+                pyr.mean_lum(p, level) = mean(mean(normM(lum)));
+                pyr.sf(p, level) = getSFreq(type, pIm, pInd, level);
+            end
+         end
             
-            saveas(f, strcat(path_save, listing(l).name), 'jpeg');
-            close(f);               
-        end
     catch err
-        disp(strcat('pyrAnalysis:Error loading ', path));
+        disp('pyrAnalysis:Error');
         disp(err.message);
         disp(err.cause);
         disp(err.stack(1));
         disp(err.stack(2));
     end
     disp('done');    
- end
+end
+
+% nested local functions
+function [pyrIM, pyrInd] =  buildPyr(ptype, im, height)
+    switch ptype
+        case 'Laplacian'
+            [pyrIM, pyrInd] = buildLpyr(im, height);
+        case 'Wavelet'
+            [pyrIM, pyrInd] = buildWpyr(im, height);
+        case 'Steerable'
+            [pyrIM, pyrInd] = buildSpyr(im, height);
+        otherwise
+            pyrIM = 0; 
+            pyrInd = 0;
+    end
+end
+function img = reconPyr(ptype, pyrIm, pyrInd, level)
+    switch ptype
+        case 'Laplacian'
+            img = reconLpyr(pyrIm, pyrInd, level);
+        case 'Wavelet'
+            img = reconWpyr(pyrIm, pyrInd, 'qmf9', 'reflect1', level, 'all');
+        case 'Steerable'
+            img = reconSpyr(pyrIm, pyrInd, 'sp1Filters', 'reflect1', level, 'all');
+        otherwise
+            img = 0;
+    end     
+end
+function height = pyrHeight(ptype, pyrInd)
+    switch ptype
+        case 'Laplacian'
+            height = floor(lpyrHt(pyrInd));
+        case 'Wavelet'
+            height = floor(wpyrHt(pyrInd));
+        case 'Steerable'
+            height = floor(spyrHt(pyrInd));
+        otherwise
+            height = 0;
+    end
+end
+function sf = getSFreq(ptype, pyrIm, pyrInd, level)
+    switch ptype
+        case 'Laplacian'
+            sf = 1/pyrInd(level, 2);
+        case 'Wavelet'
+            sf = 1/size(wpyrBand(pyrIm, pyrInd, level), 2);
+        case 'Steerable'
+            sf = 1/size(spyrBand(pyrIm, pyrInd, level), 2);
+        otherwise
+            sf = 0;
+    end
+end

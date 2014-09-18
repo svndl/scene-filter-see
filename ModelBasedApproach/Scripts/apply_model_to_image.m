@@ -1,4 +1,4 @@
-function brain = apply_model_to_image(m,im)
+function brain = apply_model_to_image(m, im)
 
 
 %initialize brain disparity response

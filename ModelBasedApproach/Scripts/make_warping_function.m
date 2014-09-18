@@ -1,10 +1,13 @@
-function [warp] = make_warping_function(m)
+function warp_n = make_warping_function(pop, rng)
 %
 % warping function for an optimal neuronal population is the integral of
 % the environmental probability distribution (see Ganguli & Simoncelli
 % 2010)
 %
-
-warp    = cumsum(m.pop) - m.pop(1);                     % take cumulative
-warp    = (range(m.rng)/range(warp))*warp + min(m.rng); % normalize cumsum of the prior to full stimulus range
+    % take cumulative
+    warp = cumsum(pop) - pop(1);                     
+    
+    % normalize cumsum of the prior to full stimulus range
+    warp_n = (range(rng)/range(warp))*warp + min(rng); 
+end
 
