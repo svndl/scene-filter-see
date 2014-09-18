@@ -92,7 +92,7 @@ function image = loadImages(path, image)
             otherwise
         end
     catch err
-        disp(strcat('LoadImages:Error loading ', path));
+        disp('LoadImages:Error');
         disp(err.message);
         disp(err.cause);
         disp(err.stack(1));
