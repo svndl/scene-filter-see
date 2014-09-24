@@ -1,31 +1,31 @@
-function [brain] = predict_model_response(image_name, testing, picture, plot)
+function [brain] = predict_model_response(image_name, testing, picture, trueplot)
+%
+% This function runs an image and depth map through the brain-based model
+% of perceived depth
 
-    %testing  = 1;
-    %picture  = 1;
+% load in natural scene statistics
+env.feature      = 'disp';
+%% Visual feature properties in the environment
+% environmental probabilities for brights and darks
+% env is a structure with the folloving fields:
+% env.bright
+% env.dark
+% env.all
+% env.rng
 
-    % load in natural scene statistics
-    env.feature      = 'disp';
-    %% Visual feature properties in the environment   
-    % environmental probabilities for increments and decrements
-    % env is a structure with the folloving fields:
-    % env. bright
-    % env. dark
-    % env.all
-    % env.rng 
-    
-    numsamples = 1001;
-    env = get_environ_stats(env.feature, numsamples);         
+numsamples = 1001;
+env = get_environ_stats(env.feature, numsamples);
 
-    % set up brain model to use
+% set up brain model to use
 
-    model.N           = 120;                              % number of neurons for simulation
-    model.R           = 50;                               % mean population firing rate
-    model.popDensity  = 'optimal';                        % cell population density ('uniform' or 'optimal'
-    model.popGain     = 'optimal';                        % cell population response gain ('uniform' or 'optimal')
+model.N           = 120;                              % number of neurons for simulation
+model.R           = 50;                               % mean population firing rate
+model.popDensity  = 'optimal';                        % cell population density ('uniform' or 'optimal'
+model.popGain     = 'optimal';                        % cell population response gain ('uniform' or 'optimal')
 
-    model = build_model_cell_population(env, model);
+model = build_model_cell_population(env, model);
 
-    % load in image and disparity map
+% load in image and disparity map
 
 if(testing)
     
@@ -60,7 +60,7 @@ image = convert_depth_to_disparity(image);
 
 brain = apply_model_to_image(model,image);
 
-if(plot)
+if(trueplot)
     figure;  hold on;
     plot_tuning_curves(model)
     

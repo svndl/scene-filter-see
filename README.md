@@ -3,6 +3,8 @@ scene-filter-see
 
 This repository contains code for analyzing the relationship between scene image properties and perceptual judgments
 
+(1) Always start by navigating to the scene-filter-see "DoAnalysis" directory in MATLAB
+
 IMAGE MANIPULATION: high-res versions of the original and manipulated images used in the experiments; Matlab code that generated the manipulations, which can be altered and run within the current directory
 
 

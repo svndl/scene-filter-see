@@ -1,21 +1,24 @@
-function brain = apply_model_to_image(model, im)
+function brain = apply_model_to_image(model, im, depth)
+%
+% apply features of brain model to the image input to predict brain
+% response
 
+image.pixels    = im;
+image.depth     = depth;
 
-%initialize brain disparity response
-brain.disparity = NaN*ones(size(im.disparity));
+image = convert_image_to_rgc_response(image);   % simulate retinal processing
+image = convert_depth_to_disparity(image);      % simulate visual processing of depth
 
-% what is the maximum luminance response in this image?
-% used to scale other responses
-max_lum = sum(abs(im.filter(:)));
+brain.disparity = NaN*ones(size(image.disparity)); %initialize brain disparity response
 
-for p = 1:numel(im.rgc)
+for p = 1:numel(image.rgc)
     
     % grab luminance and disparity
-    lum = im.rgc(p);
-    disp = im.disparity(p);
+    lum = image.rgc(p);
+    disp = image.disparity(p);
     
     % clamp luminance to max value
-    lum = sign(lum).*min([abs(lum) max_lum]);
+    lum = sign(lum).*min([abs(lum) image.max]);
     
     % set cell population response bias based on relative luminance (bright
     % or dark) and luminance magnitude (weak to strong)
@@ -25,21 +28,27 @@ for p = 1:numel(im.rgc)
     if lum > 0
         
         % concat biased and unbiased responses
-        b = model.resp_bright;
+        %b = model.resp_bright;
         
-        resp_cat = [b ; repmat(mean(b), [size(b, 1), 1])];
+        resp_cat = [model.gain.bright ; repmat(mean(model.gain.bright),size(model.gain.bright))];
+
+        %resp_cat = [b ; repmat(mean(b), [size(b, 1), 1])];
         % concat luminance magnitude based weights
-        l = lum/max_lum;
-        weight_cat = [repmat(l, size(b)); repmat(1 - l, size(b))];
+        l = lum/image.max;
+        weight_cat = [repmat(l, size(model.gain.bright)); repmat(1 - l, size(model.gain.bright))];
         gain = wmean(resp_cat, weight_cat);
         
     elseif lum < 0
-        d = model.resp_dark;
+        
+        %d = model.resp_dark;
+        
+        resp_cat = [model.gain.dark ; repmat(mean(model.gain.dark),size(model.gain.dark))];
+        
         % concat biased and unbiased responses
-        resp_cat = [ d; repmat(mean(d), [size(d, 1), 1])];
+        %resp_cat = [ d; repmat(mean(d), [size(d, 1), 1])];
         % concat luminance magnitude based weights
-        l = abs(lum)/max_lum;
-        weight_cat = [repmat(l, size(d)); repmat(1 - l, size(d))];
+        l = abs(lum)/image.max;
+        weight_cat = [repmat(l, size(model.gain.dark)); repmat(1 - l, size(model.gain.dark))];
         gain = wmean(resp_cat, weight_cat);
         
     elseif lum == 0
@@ -63,3 +72,4 @@ for p = 1:numel(im.rgc)
 end
 
 brain.volume = abs(quantile(brain.disparity(:),0.95) - quantile(brain.disparity(:),0.05));
+brain.image = image;

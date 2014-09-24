@@ -1,10 +1,12 @@
-% correlate the preceptual ratings with overall depth in brain model
+% Script to correlate the preceptual ratings with overall depth in brain model
 % response
 
 % example for testing this analysis out on noise images
 
 % simulate 5 image pairs
-for m = 1:5
+for m = 1:4
+    
+    display(['image ' num2str(m)]);
     
     % perceptual rating for this image comparison
     more3D(m) = rand;

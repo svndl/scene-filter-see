@@ -23,10 +23,13 @@ imsur   = conv2( im.pixels, sur, 'same' );                         % surround fi
 imad    = conv2( im.pixels, ada, 'same' );                         % adaptation filter for divisive normalization, same as surround
 
 im.rgc      = (imcen - imsur)./imad;                            % combine center - surround, and divisive normalization      
-im.rgc      = im.rgc(fwid:end-fwid-1,fwid:end-fwid-1);              % crop edges by 1/2 filter width
+im.rgc      = im.rgc(fwid+1:end-fwid,fwid+1:end-fwid);              % crop edges by 1/2 filter width
 im.rgc      = (2*(im.rgc - min(im.rgc(:)))/range(im.rgc(:))) - 1;
-im.pixels      = im.pixels(fwid:end-fwid-1,fwid:end-fwid-1);              % crop edges by 1/2 filter width
-im.depth       = im.depth(fwid:end-fwid-1,fwid:end-fwid-1);              % crop edges by 1/2 filter width
+
+im.pixels      = im.pixels(fwid+1:end-fwid,fwid+1:end-fwid);              % crop edges by 1/2 filter width
+im.depth       = im.depth(fwid+1:end-fwid,fwid+1:end-fwid);              % crop edges by 1/2 filter width
 
 
-im.filter = cen - sur;
+im.filter   = cen - sur;
+im.max      = sum(abs(im.filter(:))); % maximum luminance response in this image, used to scale other responses
+
