@@ -3,8 +3,8 @@ function gain = set_response_gain(popGain, env, pref)
     switch popGain
         
         case 'uniform'    
-            g_bright = 0.5*ones(1, length(prefs));
-            g_dark = 0.5*ones(1, length(prefs));
+            g_bright = 0.5*ones(1, length(pref));
+            g_dark = 0.5*ones(1, length(pref));
     
         case 'optimal'
             p_br  = interp1(env.rng, env.bright, pref);     

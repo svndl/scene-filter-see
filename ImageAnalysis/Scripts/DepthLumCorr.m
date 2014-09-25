@@ -112,6 +112,11 @@ function DepthLumCorr
                 trial_tp_orig(idx, 2) = trial3d_tp_orig;
                 trial_orig_ap(idx, 1) = trial_corr_orig_ap;
                 trial_orig_ap(idx, 2) = trial3d_orig_ap;
+                
+                display([num2str(calc_tp_ap(idx, 1),2) '  ' num2str(trial_tp_ap(idx, 1),2)]);
+                display([num2str(calc_tp_orig(idx, 1),2) '  ' num2str(trial_tp_orig(idx, 1),2)]);
+                display([num2str(calc_orig_ap(idx, 1),2) '  ' num2str(trial_orig_ap(idx, 1),2)]);
+                
             end
         end
     catch err

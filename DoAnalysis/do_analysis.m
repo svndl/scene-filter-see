@@ -13,6 +13,7 @@ function do_analysis(approach)
 close all;              % close any open figures
 loadit = 1;             % load precomputed data
 paths  = setup_path;    % add all subfolders to your path
+checkit =  exist([paths.results '/analysis_results.mat'],'file'); % look for precomputed data
 
 % just run manipulation and exit
 if strcmp(approach,'run_manipulation')
@@ -21,12 +22,12 @@ if strcmp(approach,'run_manipulation')
 end
 
 % run other analyses
-if(loadit)
+if(loadit && checkit)
     
     display('Loading precomputed image data...');
     load([paths.results '/analysis_results.mat']);                      % basic image and perceptual data already processed
     
-else
+elseif ~checkit
     
     % set up
     all_images  = list_folder([paths.images '/Originals']);             % list all of the images available to analyze
@@ -62,7 +63,7 @@ switch approach
         pred = image_correlation(image);
         do_plot(pred,percept,paths,'Image-Based Overall Luminance-Depth Correlation',[-0.1 1.75],0);
         
-        
+        keyboard
     case 'image_pyramid'
         
         loadPyr = 1;
@@ -82,12 +83,16 @@ switch approach
         if loadBrain
             display('Loading precomputed brain model based analysis');
             load([paths.results '/brain_model_results_picture.mat'])
+            load([paths.results '/brain_model_all_picture.mat'])
         else
             display('Running brain model based picture analysis');
-            pred = model_brain(image,paths,1);
+            [model, pred] = model_brain(image,paths,1);
         end
         
         do_plot(pred,percept,paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
+        
+        % generate figure illustrating brain model
+        do_plot_model(paths,model,brain)
         
         
     case 'model_brain_world'
@@ -98,7 +103,7 @@ switch approach
             load([paths.results '/brain_model_results_world.mat'])
         else
             display('Running brain model based world analysis');
-            pred = model_brain(image,paths,0);
+            [model, pred] = model_brain(image,paths,0);
         end
         
         do_plot(pred,percept,paths,'Model-Based Brain World Responses',[-0.0001 0.0001],0);

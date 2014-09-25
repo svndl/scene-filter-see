@@ -7,6 +7,11 @@ for x = 1:length(image)
     
     validZs = ~isnan(image(x).depth);       % indices with valid depth estimates
     
+    % convert images to gamma-removed grayscale
+    image(x).orig.V = rgb2gray(image(x).orig.RGB.^(2.2));
+    image(x).enh.V = rgb2gray(image(x).enh.RGB.^(2.2));
+    image(x).deg.V = rgb2gray(image(x).deg.RGB.^(2.2));
+    
     % calculate current image correlations
     corr_orig(x) = corr(image(x).depth(validZs), image(x).orig.V(validZs));
     corr_enh(x) = corr(image(x).depth(validZs), image(x).enh.V(validZs));

@@ -1,4 +1,4 @@
-function pred = model_brain(image,paths,picturetrue)
+function [model,pred] = model_brain(image,paths,picturetrue)
 %
 % analyze the predictiveness of model brain analysis for
 % perceptual responses
@@ -17,15 +17,17 @@ model.popGain     = 'optimal';                        % cell population response
 
 model = build_model_cell_population(env, model);
 
-% generate figure illustrating brain model
-% XX
-
 sz = [50 50]; % this should be enough to prevent cropping from the two filtering stages
 
 % apply brain model to images
 for x = 1:length(image)
     
     display(['Applying brain model to image ' num2str(x)]);
+    
+    % convert images to gamma-removed grayscale
+    image(x).orig.V = rgb2gray(image(x).orig.RGB.^(2.2));
+    image(x).enh.V = rgb2gray(image(x).enh.RGB.^(2.2));
+    image(x).deg.V = rgb2gray(image(x).deg.RGB.^(2.2));
     
     % downsize images for quicker analysis
     orig = imresize(image(x).orig.V,sz);

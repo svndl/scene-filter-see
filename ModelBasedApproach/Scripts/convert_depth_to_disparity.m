@@ -16,6 +16,7 @@ if sum(im.depth) > 0
     
     im.disparity = 60.* (180/pi).* 0.064.* ( (1./im.fixations) - (1./im.depth) );
     
+    
     im.rgc      = im.rgc(fwid+1:end-fwid,fwid+1:end-fwid);              % crop edges by 1/2 filter width
     im.pixels      = im.pixels(fwid+1:end-fwid,fwid+1:end-fwid);              % crop edges by 1/2 filter width
     %im.depth       = im.depth(fwid+1:end-fwid,fwid+1:end-fwid);              % crop edges by 1/2 filter width

@@ -47,7 +47,7 @@ function pyr = pyrAnalysis(image, depth, max_levels, pyramids)
         pyr.mean_lum = zeros(nPyrs, max_levels);        
         pyr.sf = zeros(nPyrs, max_levels);            
         
-        im = rgb2gray(image.RGB.^(2.2));
+        im = rgb2gray(image.RGB.^(2.2));                    % convert image to gamma-removed grayscale
         %use only valid (~NaN) values for conv            
         validIdx = ~isnan(depth);
         depth = depth(validIdx);

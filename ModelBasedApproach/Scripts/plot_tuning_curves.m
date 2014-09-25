@@ -1,30 +1,22 @@
-function [] = plot_tuning_curves(model)
+function [] = plot_tuning_curves(model,col)
 
 
 for n = 1:size(model.response,1)
     
-    subplot(3,2,3); hold on;
+    subplot(3,2,2+col); hold on;
     plot(model.env.rng,model.gain.bright(n).*model.response(n,:),'r-','linewidth',1)
-    xlabel('Binocular Disparity (arcmin)');
-    ylabel('ON response');
+    %xlabel('Binocular Disparity (arcmin)');
+    ylabel('Bright response');
     xlim([min(model.env.rng) max(model.env.rng)]);
+    ylim([0 30]);
     
-    subplot(3,2,5); hold on;
+    subplot(3,2,4+col); hold on;
     plot(model.env.rng, model.gain.dark(n).*model.response(n,:),'b-','linewidth',1)
     xlabel('Binocular Disparity (arcmin)');
-    ylabel('OFF response');
+    ylabel('Dark response');
     xlim([min(model.env.rng) max(model.env.rng)]);
+    ylim([0 30]);
 
 end
-
-% box off;
-% set(gca,'Ycolor',[1 1 1])
-% set(gca,'Xcolor',[1 1 1])
-% ylabel('neuronal responses','color',[0 0 0]);
-% set(gca,'XTick',[])
-% set(gca,'YTick',[])
-% 
-% ylim([-0.25 0.75]);
-% xlim([min(disps) max(disps)]);
 
 

@@ -6,8 +6,18 @@ function brain = apply_model_to_image(model, im, depth)
 image.pixels    = im;
 image.depth     = depth;
 
-image = convert_image_to_rgc_response(image);   % simulate retinal processing
-image = convert_depth_to_disparity(image);      % simulate visual processing of depth
+if numel(im) > 2                                % test images are fed as two pixels, so don't do conversions
+    
+    image = convert_image_to_rgc_response(image);   % simulate retinal processing
+    image = convert_depth_to_disparity(image);      % simulate visual processing of depth
+    
+else
+    
+    image.rgc       = image.pixels;
+    image.max       = 1;
+    image.disparity = image.depth;
+    
+end
 
 brain.disparity = NaN*ones(size(image.disparity)); %initialize brain disparity response
 
@@ -28,11 +38,8 @@ for p = 1:numel(image.rgc)
     if lum > 0
         
         % concat biased and unbiased responses
-        %b = model.resp_bright;
-        
         resp_cat = [model.gain.bright ; repmat(mean(model.gain.bright),size(model.gain.bright))];
-
-        %resp_cat = [b ; repmat(mean(b), [size(b, 1), 1])];
+        
         % concat luminance magnitude based weights
         l = lum/image.max;
         weight_cat = [repmat(l, size(model.gain.bright)); repmat(1 - l, size(model.gain.bright))];
@@ -40,12 +47,9 @@ for p = 1:numel(image.rgc)
         
     elseif lum < 0
         
-        %d = model.resp_dark;
-        
+        % concat biased and unbiased responses
         resp_cat = [model.gain.dark ; repmat(mean(model.gain.dark),size(model.gain.dark))];
         
-        % concat biased and unbiased responses
-        %resp_cat = [ d; repmat(mean(d), [size(d, 1), 1])];
         % concat luminance magnitude based weights
         l = abs(lum)/image.max;
         weight_cat = [repmat(l, size(model.gain.dark)); repmat(1 - l, size(model.gain.dark))];
@@ -64,11 +68,11 @@ for p = 1:numel(image.rgc)
         resp        = interp1(model.env.rng, cell_resp, disp);
         popresp(n)  = resp;
     end
-
+    
     val = interp1(model.preferences, popresp, model.env.rng);
-
+    
     brain.disparity(p) = wmean(model.env.rng(~isnan(val)),val(~isnan(val)));
-
+    
 end
 
 brain.volume = abs(quantile(brain.disparity(:),0.95) - quantile(brain.disparity(:),0.05));

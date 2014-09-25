@@ -3,7 +3,12 @@ scene-filter-see
 
 This repository contains code for analyzing the relationship between scene image properties and perceptual judgments
 
-(1) Always start by navigating to the scene-filter-see "DoAnalysis" directory in MATLAB
+Start by navigating to the scene-filter-see "DoAnalysis" directory in MATLAB. The script "do_analysis" is a good place to start. You can run it with a few different analyses, for instance do_analysis('image_correlation') to perform an image-based analysis of the predictiveness of whole-image luminance/depth correlations on perceived 3D.
+
+
+
+Other folders:
+
 
 IMAGE MANIPULATION: high-res versions of the original and manipulated images used in the experiments; Matlab code that generated the manipulations, which can be altered and run within the current directory
 
