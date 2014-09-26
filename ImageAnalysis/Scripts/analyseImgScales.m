@@ -146,6 +146,12 @@ function analyseImgScales
         data = vertcat(trial_tp_ap, trial_tp_orig, trial_orig_ap);
         X0 = data(:, 1);
         Y0 = data(:, 2);
+        % save data
+        pyrImgs.X = pyrX;
+        pyrImgs.X0 = X0;
+        pyrImgs.Y0 = Y0;
+        
+        save(strcat(result_path, 'pyrImgs.mat'), 'pyrImgs');
         
         for p =1:nPyrs
             pyr = squeeze(pyrX(p, :, :));
@@ -155,7 +161,7 @@ function analyseImgScales
             close(f);
         end
     catch err
-        disp('DepthLumCorr:Error loading ');
+        disp('analyseImgScales:Error loading ');
         disp(err.message);
         disp(err.cause);
         disp(err.stack(1));
