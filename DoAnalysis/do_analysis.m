@@ -17,16 +17,16 @@ checkit =  exist([paths.results '/analysis_results.mat'],'file'); % look for pre
 
 %% I. We're 
 
-fprintf('Loading the preceptual experiment results and curent image sets \n');
 
 % run other analyses
 if(loadit && checkit)
     
-    display('Loading precomputed image data...');
+    fprintf('Loading precomputed image data...\n');
     load([paths.results '/analysis_results.mat']);                      % basic image and perceptual data already processed
     
 elseif ~checkit
-    
+    fprintf('Loading original enhanced and degraded image sets \n');
+
     % set up
     all_images  = list_folder([paths.images '/Originals']);             % list all of the images available to analyze
     [dat,trl]   = load_perceptual_data(paths);                          % load mat-file w. perceptual experiment data
@@ -34,6 +34,7 @@ elseif ~checkit
     nImages = length(all_images);
     
     %img(nImages) = img0;
+    %we use growing structure, not good
     
     % load in image and perceptual data
     for x = 1:nImages                                        % for each image
@@ -50,7 +51,7 @@ elseif ~checkit
         
     end
     
-    save([paths.results '/analysis_results.mat'],'paths','percept','image');
+    save([paths.results '/analysis_results.mat'],'paths','percept','img');
 end
 %% II. Ask for user input
 str_opt1 = 'Press 1 to run image-based luminance/depth correlation analysis \n';
