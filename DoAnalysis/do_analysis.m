@@ -15,11 +15,9 @@ loadit = 1;             % load precomputed data
 paths  = setup_path;    % add all subfolders to your path
 checkit =  exist([paths.results '/analysis_results.mat'],'file'); % look for precomputed data
 
-% just run manipulation and exit
-if strcmp(approach,'run_manipulation')
-    display('Performing luminance manipulation and no other analyses');
-    manipulateLuminanceAllImages; return;
-end
+%% I. We're 
+
+fprintf('Loading the preceptual experiment results and curent image sets \n');
 
 % run other analyses
 if(loadit && checkit)
@@ -33,10 +31,12 @@ elseif ~checkit
     all_images  = list_folder([paths.images '/Originals']);             % list all of the images available to analyze
     [dat,trl]   = load_perceptual_data(paths);                          % load mat-file w. perceptual experiment data
     percept     = [];
+    nImages = length(all_images);
     
+    %img(nImages) = img0;
     
     % load in image and perceptual data
-    for x = 1:length(all_images)                                        % for each image
+    for x = 1:nImages                                        % for each image
         
         sn = find(ismember(dat.scenesListSorted, all_images(x).name));  % get index in perceptual data
         if (sn)
@@ -44,7 +44,7 @@ elseif ~checkit
             display(['Loading ' all_images(x).name '...']);
             
             percept     = process_perceptual_data(percept,dat,trl,sn,x); % compute percent more 3D for each comparison
-            image(x)    = load_image_data(paths,percept.scene_name{x});  % get image and depth map for analysis
+            img(x)    = load_image_data(paths,percept.scene_name{x});  % get image and depth map for analysis
             
         end
         
@@ -52,19 +52,29 @@ elseif ~checkit
     
     save([paths.results '/analysis_results.mat'],'paths','percept','image');
 end
+%% II. Ask for user input
+str_opt1 = 'Press 1 to run image-based luminance/depth correlation analysis \n';
+str_opt2 = 'Press 2 to run image-based coarse-to-fine depth correlation analysis \n';
+str_opt3 = 'Press 3 to run brain response based analysis modeling picture viewing \n';
+str_opt4 = 'Press 4 to run brain response based analysis modeling world viewing \n';
+str_opt5 = 'Press 5 to run the image enhancement manipulation only, no analysis \n';
 
+fprintf([str_opt1, str_opt2, str_opt3, str_opt4, str_opt5]);
+
+str_prompt = 'Your choise is: ';
+usr_input = input(str_prompt);
 
 % run specified approach style to generate and test predictors
-switch approach
+switch usr_input
     
-    case 'image_correlation'
+    case 1
         
         display('Running whole image luminance/depth correlation analysis');
-        pred = image_correlation(image);
+        pred = image_correlation(img);
         do_plot(pred,percept,paths,'Image-Based Overall Luminance-Depth Correlation',[-0.1 1.75],0);
         
         keyboard
-    case 'image_pyramid'
+    case 2
         
         loadPyr = 1;
         if loadPyr
@@ -72,12 +82,12 @@ switch approach
             load([paths.results '/image_pyramid_results_picture.mat']);
         else
             display('Running coarse-to-fine luminance/depth correlation analysis');
-            pred = image_pyramid(image,paths);
+            pred = image_pyramid(img,paths);
         end
         do_plot(pred,percept,paths,'Image-Based Coarse-to-Fine Luminance-Depth Correlation',[-0.01 0.2],1);
         
         
-    case 'model_brain_picture'
+    case 3
         
         loadBrain = 1;
         if loadBrain
@@ -86,7 +96,7 @@ switch approach
             load([paths.results '/brain_model_all_picture.mat'])
         else
             display('Running brain model based picture analysis');
-            [model, pred] = model_brain(image,paths,1);
+            [model, pred] = model_brain(img,paths,1);
         end
         
         do_plot(pred,percept,paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
@@ -95,7 +105,7 @@ switch approach
         do_plot_model(paths,model,brain)
         
         
-    case 'model_brain_world'
+    case 4
         
         loadBrain = 1;
         if loadBrain
@@ -103,12 +113,14 @@ switch approach
             load([paths.results '/brain_model_results_world.mat'])
         else
             display('Running brain model based world analysis');
-            [model, pred] = model_brain(image,paths,0);
+            [model, pred] = model_brain(img,paths,0);
         end
         
         do_plot(pred,percept,paths,'Model-Based Brain World Responses',[-0.0001 0.0001],0);
         
-        
+    case 5
+        display('Performing luminance manipulation and no other analyses');
+        manipulateLuminanceAllImages;
     otherwise
         
         error('unknown approach');
@@ -200,24 +212,24 @@ percept.orig_deg(x)  = 100*sum(trl.resp_Amore3DthanB(orig_degInds))/length(trl.r
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function image = load_image_data(paths,image_name)
+function img = load_image_data(paths,image_name)
 %
 % load in :
 %   original, enhanced, degraded images
 %   depth map
 
-image.name      = image_name;
+img.name      = image_name;
 
-image.orig.RGB  = imread_double([paths.images '/TowardsThePrior/' image.name '/right_original.png'],8);     % RGB image
-image.orig.V    = imread_double([paths.images '/TowardsThePrior/' image.name '/right_Voriginal.png'],8);    % Luminance image
+img.orig.RGB  = imread_double([paths.images '/TowardsThePrior/' img.name '/right_original.png'],8);     % RGB image
+img.orig.V    = imread_double([paths.images '/TowardsThePrior/' img.name '/right_Voriginal.png'],8);    % Luminance image
 
-image.enh.RGB   = imread_double([paths.images '/TowardsThePrior/' image.name '/right_tp.png'],8);
-image.enh.V     = imread_double([paths.images '/TowardsThePrior/' image.name '/right_Vtp.png'],8);
+img.enh.RGB   = imread_double([paths.images '/TowardsThePrior/' img.name '/right_tp.png'],8);
+img.enh.V     = imread_double([paths.images '/TowardsThePrior/' img.name '/right_Vtp.png'],8);
 
-image.deg.RGB   = imread_double([paths.images '/AgainstThePrior/' image.name '/right_ap.png'],8);
-image.deg.V     = imread_double([paths.images '/AgainstThePrior/' image.name '/right_Vap.png'],8);
+img.deg.RGB   = imread_double([paths.images '/AgainstThePrior/' img.name '/right_ap.png'],8);
+img.deg.V     = imread_double([paths.images '/AgainstThePrior/' img.name '/right_Vap.png'],8);
 
-image.depth     = load([paths.images '/TowardsThePrior/' image.name '/OtherManipulationInfo/' image.name 'right_depthmapOriginal.mat']);
-image.depth     = image.depth.imZOrig;
+img.depth     = load([paths.images '/TowardsThePrior/' img.name '/OtherManipulationInfo/' img.name 'right_depthmapOriginal.mat']);
+img.depth     = img.depth.imZOrig;
 
 
