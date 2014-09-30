@@ -2,7 +2,7 @@ function do_plot(pred,percept,paths,title,limX,pyr)
 %
 % plot whole iamge luminance depth correlation predictors
 
-setupfig(6,6.5,10); hold on; suptitle(title);
+f = setupfig(6,6.5,10); hold on; suptitle(title);
 
 if ~pyr
     
@@ -44,9 +44,12 @@ else
     end
     
 end
-export_fig([paths.results '/' title '.pdf']);
+try
+    export_fig([paths.results '/' title '.pdf']);
+catch err
+    saveas(f, strcat(paths.results, '/', title, '.pdf'), 'pdf');
+end
 display([ title 'plot has been generated and saved to Results'])
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
