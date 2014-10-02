@@ -4,27 +4,36 @@ function do_analysis
 %
 % Current approach options are:
 %
-%   'image_correlation'     - runs image-based luminance/depth correlation analysis
-%   'image_pyramid'         - runs image-based coarse-to-fine depth correlation analysis
-%   'model_brain_picture' 	- runs brain response based analysis modeling picture viewing
-%   'model_brain_world'     - runs brain response based analysis modeling world viewing
-%   'run_manipulation'      - runs the image enhancement manipulation only, no analysis
+%   1 ->'image_correlation'     - runs image-based luminance/depth correlation analysis
+%   2 ->'image_pyramid'         - runs image-based coarse-to-fine depth correlation analysis
+%   3 ->'model_brain_picture' 	- runs brain response based analysis modeling picture viewing
+%   4 ->'model_brain_world'     - runs brain response based analysis modeling world viewing
+%   5 ->'run_manipulation'      - runs the image enhancement manipulation only, no analysis
 
 close all;              % close any open figures
-loadit = 1;             % load precomputed data
+str_prompt = 'Enter Y to load the scenes from mat-file, N to read the scenes from disk. /n';
+
+try
+    load_str = input(str_prompt, 's');
+catch err
+    load_str = 'Y';
+end
+
+loadit = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
 paths  = setup_path;    % add all subfolders to your path
-checkit =  exist([paths.results '/analysis_results.mat'],'file'); % look for precomputed data
+% look for precomputed data
+checkit =  exist([paths.results '/analysis_results.mat'],'file');
 
 %% I. Loading current/pre-computed data
 
-
-% run other analyses
+% we want to use pre-computed data and it exists 
 if(loadit && checkit)
     
     fprintf('Loading precomputed image data...\n');
     load([paths.results '/analysis_results.mat']);                      % basic image and perceptual data already processed
-    
-elseif ~checkit
+
+% we don't want to load the data/it doesn't exist    
+elseif (~loadit || ~checkit)
     fprintf('Loading original, enhanced, and degraded image sets \n');
 
     % set up
@@ -72,8 +81,16 @@ switch usr_input
         do_plot(pred, percept, paths,'Image-Based Overall Luminance-Depth Correlation',[-0.1 1.75],0);
     case 2
         
-        loadPyr = 1;
-        if loadPyr
+        str_prompt = 'Load precomputed multi-scaled images Y/N [Y]';
+        try
+            load_str = input(str_prompt, 's');
+        catch err
+            load_str = 'Y';
+        end
+        
+        loadPyr = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
+        checkPyr = exist([paths.results '/image_pyramid_results_picture.mat'],'file');
+        if (loadPyr && checkPyr)
             fprintf('Loading precomputed image pyramid analysis \n');
             load([paths.results '/image_pyramid_results_picture.mat']);
         else
@@ -84,15 +101,25 @@ switch usr_input
         
         
     case 3
+        str_prompt = 'Load precomputed brain model results? Y/N [Y]';
         
-        loadBrain = 1;
-        if loadBrain
+        try
+            load_str = input(str_prompt, 's');
+        catch err
+            load_str = 'Y';
+        end
+        loadBrain = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
+        
+        checkBrain1 = exist([paths.results '/brain_model_results_picture.mat'],'file');
+        checkBrain2 = exist([paths.results '/brain_model_all_picture.mat'],'file');
+
+        if (loadBrain && checkBrain1 && checkBrain2)
             fprintf('Loading precomputed brain model based analysis \n');
             load([paths.results '/brain_model_results_picture.mat'])
             load([paths.results '/brain_model_all_picture.mat'])
         else
             fprintf('Running brain model based picture analysis \n');
-            [model, pred] = model_brain(img, paths, 1);
+            [model, brain, pred] = model_brain(img, paths, 1);
         end
         
         do_plot(pred, percept, paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
@@ -100,14 +127,22 @@ switch usr_input
         % generate figure illustrating brain model
         do_plot_model(paths, model, brain);
     case 4
+        str_prompt = 'Load precomputed brain model results? Y/N [Y]';
         
-        loadBrain = 1;
-        if loadBrain
+        try
+            load_str = input(str_prompt, 's');
+        catch err
+            load_str = 'Y';
+        end
+        loadBrain = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
+        
+        checkBrain = exist([paths.results '/brain_model_results_world.mat'],'file');
+        if (loadBrain && checkBrain)
             fprintf('Loading precomputed brain model based analysis \n');
             load([paths.results '/brain_model_results_world.mat'])
         else
             fprintf('Running brain model based world analysis \n');
-            [model, pred] = model_brain(img,paths,0);
+            [model, brain, pred] = model_brain(img,paths,0);
         end
         do_plot(pred, percept, paths, 'Model-Based Brain World Responses', [-0.0001 0.0001],0);
     case 5
