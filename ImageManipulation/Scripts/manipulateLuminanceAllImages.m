@@ -1,4 +1,4 @@
-function [] = manipulateLuminanceAllImages()
+function manipulateLuminanceAllImages()
 
 % This function runs the manipulatLuminance function on all scenes
 % contained in the Images/Originals directory
