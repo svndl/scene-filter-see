@@ -32,7 +32,7 @@ else
     pred.all        = [pred.enh_deg pred.enh_orig pred.orig_deg];
     percept.all     = cat(2,percept.enh_deg,percept.enh_orig,percept.orig_deg);
     
-    pyr_labels = {'Coarse Scale','Mid Scale 1','Mid Scale 2','Fine Scale'}
+    pyr_labels = {'Coarse Scale','Mid Scale 1','Mid Scale 2','Fine Scale'};
     
     for p = 1:4
         subplot(2,2,p); hold on;

@@ -72,8 +72,6 @@ function pyr = pyrAnalysis(image, depth, max_levels, pyramids)
         disp(err.stack(1));
         disp(err.stack(2));
     end
-    disp('done');    
-
 
 % nested local functions
 function [pyrIM, pyrInd] =  buildPyr(ptype, im, height)

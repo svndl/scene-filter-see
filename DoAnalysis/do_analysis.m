@@ -11,7 +11,7 @@ function do_analysis
 %   5 ->'run_manipulation'      - runs the image enhancement manipulation only, no analysis
 
 close all;              % close any open figures
-str_prompt = 'Enter Y to load the scenes from mat-file, N to read the scenes from disk. /n';
+str_prompt = 'Enter Y to load the scenes from mat-file, N to read the scenes from disk. \n';
 
 try
     load_str = input(str_prompt, 's');
