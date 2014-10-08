@@ -1,5 +1,5 @@
 %load images
-function image = loadImages(path, image)
+function image = loadImages(path)
 
     % Note that Middlebury depth is in disparity units, so we load disparity
     % and convert to depth. LiveColor+3D is in meters, so we load depth and
