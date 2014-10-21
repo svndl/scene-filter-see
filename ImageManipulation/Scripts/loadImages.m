@@ -1,5 +1,5 @@
 %load images
-function image = loadImages(path)
+function image = loadImages(path, image)
 
     % Note that Middlebury depth is in disparity units, so we load disparity
     % and convert to depth. LiveColor+3D is in meters, so we load depth and
@@ -21,28 +21,81 @@ function image = loadImages(path)
                 
                 filename = strcat(path, '/', dir_name);
                 %load files
-                image.imRGB = double(imread(strcat(filename, 'right.png')))/255;
-                image.imRGBLeft = double(imread(strcat(filename, 'left.png')))/255;
+                %% MB files #1
+                
+                left{1} = strcat(filename, 'left.png');
+                right{1} = strcat(filename, 'right.png');
+                depth1 = strcat(filename, 'right_depth.png');
+                dmin1 = strcat(path, '/', 'dmin.txt');
+                
+                %% MB files new
+                left{2} = strcat(path, '/', 'im0.png');
+                right{2} = strcat(path, '/', 'im1.png');
+                depth2 = strcat(path, '/', 'disp1.pfm');
+                dmin2 = strcat(path, '/', 'calib.txt'); 
+                
+                %%figure out what set of MB to load
+                l_idx = 2*(~exist(left{1}, 'file')) + (~exist(left{2}, 'file'));
+                r_idx = 2*(~exist(right{1}, 'file')) + (~exist(right{2}, 'file')); 
+                
+                image.imRGB = double(imread(right{r_idx}))/255;
+                image.imRGBLeft = double(imread(left{l_idx}))/255;
     
                 %note that middlebury depth is in disparity units, so we have to convert it
-                dispmap     = double(imread(strcat(filename, 'right_depth.png'))); 
-                %This will be used to set zero disparity point in stereogram
-                %presentation:
-                %average disparity in pixels, divide by two to get shift for each image,
-                %divide by 4 because l/r images are 1/4 the distance appart as disparity maps
-                image.median_pixel_disparity = round(median((dispmap(~isnan(dispmap)))/2)/4);
- 
+                %%read depth 
+                if (exist(depth1, 'file'))                
+                    dispmap = double(imread(depth1));
+                    mb_fl_pix       = 3740; %from middlebury documentation
+                    mb_baseline_mm  = 160;
+                
+                    fp = fopen(dmin1);
+                    dmin =  fscanf(fp, '%f');
+                    fclose(fp);
+                    
+                    %This will be used to set zero disparity point in stereogram
+                    %presentation:
+                    %average disparity in pixels, divide by two to get shift for each image,
+                    %divide by 4 because l/r images are 1/4 the distance appart as disparity maps
+                    image.median_pixel_disparity = round(median((dispmap(~isnan(dispmap)))/2)/4);
+
+                    %% read new depth map    
+                elseif (exist(depth2, 'file'))
+                    dispmap = double(pfmread(depth2));
+                    fp = fopen(dmin2);
+                    
+                    tline = fgets(fp);
+                    while (ischar(tline))
+                        datatype = strtok(tline, '=');
+                        switch (datatype)
+                            case 'vmin'
+                                dmin = sscanf(tline, 'vmin= %f');
+                            case 'vmax'
+                                dmax = sscanf(tline, 'vmax= %f');
+                            case 'baseline'
+                                mb_baseline_mm = sscanf(tline, 'baseline= %f');
+                            otherwise
+                        end
+                        tline = fgets(fp);
+                    end
+                    fclose(fp);
+                    %This will be used to set zero disparity point in stereogram
+                    %presentation:
+                    %average disparity in pixels, divide by two to get shift for each image,
+                    %divide by 4 because l/r images are 1/4 the distance appart as disparity maps
+                    image.median_pixel_disparity = round(median((dispmap(~isinf(dispmap)))/2)/4);
+                    dispmap(isinf(dispmap)) = NaN;
+                    mb_fl_pix = 3740; % how to get it from file
+                    
+                else
+                    fprintf('No depth map, skipping the file');
+                    return;
+                end
+                
                 %deal invalid values
-                dispmap(dispmap == 0) = NaN;
+                dispmap(dispmap == 0) = NaN;                                    
+
     
                 %convert disparity to depth
-                mb_fl_pix       = 3740; %from middlebury documentation
-                mb_baseline_mm  = 160;
-                
-                %this offset value is provided to correct disparities
-                fileID = fopen(strcat(path, '/dmin.txt'));
-                dmin =  fscanf(fileID, '%f');
-                fclose(fileID);
                 dmap = (mb_fl_pix*mb_baseline_mm)./(dispmap + dmin);
                 image.imZ = dmap./1000; % convert to meters
                 image.imZOrig = image.imZ;

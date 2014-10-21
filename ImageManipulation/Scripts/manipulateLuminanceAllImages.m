@@ -4,8 +4,8 @@ function manipulateLuminanceAllImages()
 % contained in the Images/Originals directory
 
 % Emily Cooper, Stanford University 2014
-    mpath = userpath;
-    abs_path = strcat(mpath(1:end - 1), '/scene-filter-see/ImageManipulation/Images/Originals');
+    mpath = strtok(userpath, ':');
+    abs_path = strcat(mpath, '/scene-filter-see/ImageManipulation/Images/Originals');
     rel_path = '../Images/Originals';
 
     %figure out path locations
