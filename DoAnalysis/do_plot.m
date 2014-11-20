@@ -2,7 +2,7 @@ function do_plot(pred,percept,paths,title,limX,pyr)
 %
 % plot whole iamge luminance depth correlation predictors
 
-setupfig(6,6.5,10); hold on; suptitle(title);
+f = setupfig(6,6.5,10); hold on; suptitle(title);
 
 if ~pyr
     
@@ -32,7 +32,7 @@ else
     pred.all        = [pred.enh_deg pred.enh_orig pred.orig_deg];
     percept.all     = cat(2,percept.enh_deg,percept.enh_orig,percept.orig_deg);
     
-    pyr_labels = {'Coarse Scale','Mid Scale 1','Mid Scale 2','Fine Scale'}
+    pyr_labels = {'Coarse Scale','Mid Scale 1','Mid Scale 2','Fine Scale'};
     
     for p = 1:4
         subplot(2,2,p); hold on;
@@ -44,9 +44,12 @@ else
     end
     
 end
-export_fig([paths.results '/' title '.pdf']);
+try
+    export_fig([paths.results '/' title '.pdf']);
+catch err
+    saveas(f, strcat(paths.results, '/', title, '.pdf'), 'pdf');
+end
 display([ title 'plot has been generated and saved to Results'])
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,5 @@
-function [] = setupfig(wid,ht,ft)
+function f = setupfig(wid,ht,ft)
+f = figure;
 set(gcf ,'windowStyle','normal');
 set(gcf,'color','w');
 set(gcf, 'Units', 'inches');

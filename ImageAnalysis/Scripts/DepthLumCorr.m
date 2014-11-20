@@ -7,8 +7,10 @@ function DepthLumCorr
     %absolute path should always work
     %check if relative location also works
     
-    abs_path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
-    abs_experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
+    mpath = userpath;
+    abs_path = strcat(mpath(1:end - 1),'/scene-filter-see/ImageManipulation/Images/Originals');
+    abs_experiment_path = strcat(mpath(1:end - 1), '/scene-filter-see/PerceptualExperiment/Data');
+
 
     rel_path = '../Images/Originals';
     rel_experiment_path = '../../PerceptualExperiment/Data';

@@ -31,7 +31,7 @@ model3 = build_model_cell_population(env, model);
 
 % figure of uniform and optimal populations
 
-figure(); setupfig(6,6.5,10); hold on;
+f1 = setupfig(6,6.5,10); hold on;
 
 subplot(3,2,1:2); hold on; title('Environmental Probabilities');
 h(1) = plot(env.rng,env.bright./sum(env.bright),'r');
@@ -49,7 +49,12 @@ text(0,72,'B','fontweight','bold');
 plot_tuning_curves(model2,2)
 text(0,72,'C','fontweight','bold');
 
-export_fig './Results/Model Framework.pdf'
+savestr = strcat(paths.results,'/Model Framework.pdf');
+try
+    export_fig(savestr);
+catch err
+    saveas(f1, savestr, 'pdf');
+end
 
 
 ind = 8;
@@ -64,7 +69,7 @@ rdblcmap = cat(1,rdblcmap,cat(2,ones(size(rdblcmap,1),1),flipud(rdblcmap(:,1)),f
 
 % figure of decoding
 
-figure(); setupfig(6,4,10); hold on;
+f2 = setupfig(6,4,10); hold on;
 
 br_resp = model3.resp_bright(:,model3.env.rng == 0);
 dk_resp = model3.resp_dark(:,model3.env.rng == 0);
@@ -107,7 +112,13 @@ imagesc(flipud(brain(ind).orig.disparity)); colormap gray; axis image off;
 subplot(2,3,3); hold on; title('{\bf D }True depth map')
 imagesc(flipud(image(ind).depth)); colormap cool; axis image off;
 
-export_fig './Results/Model Example.pdf'
+savestr = strcat(paths.results,'/Model Example.pdf');
+
+try
+    export_fig(savestr)
+catch err
+    saveas(f2, savestr, 'pdf');
+end
 
 keyboard
 

@@ -125,9 +125,13 @@ switch usr_input
         do_plot(pred, percept, paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
         
         % generate figure illustrating brain model
+<<<<<<< HEAD
+        do_plot_model(paths,model,brain,image)
+=======
         do_plot_model(paths, model, brain);
     case 4
         str_prompt = 'Load precomputed brain model results? Y/N [Y]';
+>>>>>>> 1447975c23e20becca130325dbc2c305b264b531
         
         try
             load_str = input(str_prompt, 's');

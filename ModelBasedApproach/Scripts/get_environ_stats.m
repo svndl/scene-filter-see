@@ -1,11 +1,11 @@
-function env = get_environ_stats(paths,feature)
+function env = get_environ_stats(paths, env)
 %
 % get statistical distributions for brights, darks, and overall for the
 % feature
 
 numsamples = 1001; % number of upsamples
 
-switch feature
+switch env.feature
     case'f'
         % theoretical visual features has a uniform distribution
         x = -49:49;

@@ -1,16 +1,15 @@
 close all;
 clear all;
 
-%addpath(genpath('..'));
+addpath(genpath('..'));
 testing  = 1;
 picture  = 1;
 
 % load in natural scene statistics
 
 env.feature      = 'disp';
-%
-home_path = userpath;
-paths.env = [home_path(1:end - 1) '/scene-filter-see/ModelBasedApproach/EnvironStats'];
+paths = userpath;
+
 % Visual feature properties in the environment
 env  = get_environ_stats(paths, env);         % environmental probabilities for increments and decrements
 
@@ -28,8 +27,7 @@ model = build_model_cell_population(env,model);
 if(testing)
     
     % noise image and depth map
-    imgsize = zeros(124, 124, 1);
-    image.pixels    = mkFract(size(imgsize), 1.2);
+    image.pixels    = mkFract(124,1.2);
     image.pixels    = (image.pixels - min(image.pixels(:)))./range(image.pixels(:));
     image.depth     = mkFract(124,1);
     image.depth    = (image.depth - min(image.depth(:)))./range(image.depth(:));

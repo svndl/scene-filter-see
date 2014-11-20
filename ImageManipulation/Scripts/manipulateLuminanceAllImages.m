@@ -1,12 +1,13 @@
-function [] = manipulateLuminanceAllImages()
+function manipulateLuminanceAllImages()
 
 % This function runs the manipulatLuminance function on all scenes
 % contained in the Images/Originals directory
 
 % Emily Cooper, Stanford University 2014
-    abs_path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    mpath = userpath;
+    abs_path = strcat(mpath(1:end - 1), '/scene-filter-see/ImageManipulation/Images/Originals');
     rel_path = '../Images/Originals';
-    
+
     %figure out path locations
     if(exist(rel_path, 'dir'))
         path = rel_path;

@@ -37,7 +37,7 @@ function pyr = pyrAnalysis(image, depth, max_levels, pyramids)
         error('matlabPyrTools is not linked, please add toolbox to the path');
     end
     
-    disp('WARNING: this function requires patched reconSpyr.m. Please unlink other versions of matlabPyrTools');
+    %disp('WARNING: this function requires patched reconSpyr.m. Please unlink other versions of matlabPyrTools');
     
     try
         nPyrs = numel(pyramids);
@@ -72,8 +72,6 @@ function pyr = pyrAnalysis(image, depth, max_levels, pyramids)
         disp(err.stack(1));
         disp(err.stack(2));
     end
-    disp('done');    
-
 
 % nested local functions
 function [pyrIM, pyrInd] =  buildPyr(ptype, im, height)

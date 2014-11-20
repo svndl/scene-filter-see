@@ -1,4 +1,4 @@
-function [model,pred] = model_brain(image,paths,picturetrue)
+function [model, brain, pred] = model_brain(image,paths,picturetrue)
 %
 % analyze the predictiveness of model brain analysis for
 % perceptual responses
