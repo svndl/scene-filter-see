@@ -92,7 +92,7 @@ switch approach
         do_plot(pred,percept,paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
         
         % generate figure illustrating brain model
-        do_plot_model(paths,model,brain)
+        do_plot_model(paths,model,brain,image)
         
         
     case 'model_brain_world'
