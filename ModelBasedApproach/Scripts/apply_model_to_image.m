@@ -1,79 +1,58 @@
-function brain = apply_model_to_image(model, im, depth)
-%
-% apply features of brain model to the image input to predict brain
-% response
+function brain = apply_model_to_image(model, image)
 
-image.pixels    = im;
-image.depth     = depth;
 
-if numel(im) > 2                                % test images are fed as two pixels, so don't do conversions
+    if numel(image) > 2                                % test images are fed as two pixels, so don't do conversions
     
-    image = convert_image_to_rgc_response(image);   % simulate retinal processing
-    image = convert_depth_to_disparity(image);      % simulate visual processing of depth
+        im.rgc = convert_image_to_rgc_response(image.pixels);   % simulate retinal processing
+        im.depth = convert_depth_to_disparity(image.depth);      % simulate visual processing of depth
+        im.max = max(max(image.pixels));
+    else
     
-else
+        im.rgc       = image.pixels;
+        im.max       = 1;
+        im.disparity = image.depth;
     
-    image.rgc       = image.pixels;
-    image.max       = 1;
-    image.disparity = image.depth;
-    
-end
-
-brain.disparity = NaN*ones(size(image.disparity)); %initialize brain disparity response
-
-for p = 1:numel(image.rgc)
-    
-    % grab luminance and disparity
-    lum = image.rgc(p);
-    disp = image.disparity(p);
-    
-    % clamp luminance to max value
-    lum = sign(lum).*min([abs(lum) image.max]);
-    
-    % set cell population response bias based on relative luminance (bright
-    % or dark) and luminance magnitude (weak to strong)
-    
-    % gain for each cell is a weighted combination of the biased
-    % environmental gains and an unbiased set of gains
-    if lum > 0
-        
-        % concat biased and unbiased responses
-        resp_cat = [model.gain.bright ; repmat(mean(model.gain.bright),size(model.gain.bright))];
-        
-        % concat luminance magnitude based weights
-        l = lum/image.max;
-        weight_cat = [repmat(l, size(model.gain.bright)); repmat(1 - l, size(model.gain.bright))];
-        gain = wmean(resp_cat, weight_cat);
-        
-    elseif lum < 0
-        
-        % concat biased and unbiased responses
-        resp_cat = [model.gain.dark ; repmat(mean(model.gain.dark),size(model.gain.dark))];
-        
-        % concat luminance magnitude based weights
-        l = abs(lum)/image.max;
-        weight_cat = [repmat(l, size(model.gain.dark)); repmat(1 - l, size(model.gain.dark))];
-        gain = wmean(resp_cat, weight_cat);
-        
-    elseif lum == 0
-        
-        gain = zeros(size(model.response));
-        
     end
-    
-    % get response magnitude for each cell
-    for n = 1:model.N
-        
-        cell_resp   = gain(n).*model.response(n,:);
-        resp        = interp1(model.env.rng, cell_resp, disp);
-        popresp(n)  = resp;
-    end
-    
-    val = interp1(model.preferences, popresp, model.env.rng);
-    
-    brain.disparity(p) = wmean(model.env.rng(~isnan(val)),val(~isnan(val)));
-    
-end
 
-brain.volume = abs(quantile(brain.disparity(:),0.95) - quantile(brain.disparity(:),0.05));
-brain.image = image;
+
+    brain.disparity = NaN*ones(size(image.disparity)); %initialize brain disparity response
+
+    [nx, ny] = size(im.rgc);
+    ng = length(model.gain.bright);
+    nr = length(model.env.rng);
+    
+    
+    luminance = im.rgc(:);
+    disparity = im.disparity(:);
+    clamped = abs(luminance)>image.max;
+    max_l = sign(luminance)*image.max;
+    luminance(clamped)= max_l(clamped);
+    nlum = luminance/im.max;
+    bright  = nlum.*(nlum >0);
+    dark = nlum.*(nlum<0);
+    
+    mgain_b = mean(model.gain.bright);
+    mgain_d = mean(model.gain.dark);
+    
+    gain_bright = bright(:)*model.gain.bright + repmat((nlum >0).*(1 - bright)*mgain_b, [1 ng]);
+    gain_dark = abs(dark(:))*model.gain.bright + repmat((nlum<0).*(1 - abs(dark))*mgain_d, [1 ng]);
+
+    gain_tot = gain_bright + gain_dark;
+    gain_3d = repmat(reshape(gain_tot', [1 ng nx*ny]),  [nr 1 1]);
+    resp_3d = repmat(reshape(model.response', [nr ng 1]), [1 1 nx*ny]);
+    cell_resp3d = gain_3d.*resp_3d;
+    
+    pop_resp3d = interp1(model.env.rng, cell_resp3d, disparity);
+    
+    [mi, mj, ~] = size(pop_resp3d);
+    midx = cumsum([1:mi:mi*mj; mi*mj*ones(mi - 1, mj)]);
+    pop_resp2d = pop_resp3d(midx);
+    
+    val2d = interp1(model.preferences, pop_resp2d', model.env.rng);    
+    val2d(isnan(val2d)) = 0;
+    bd = wmean(repmat(model.env.rng', [1 nx*ny]), val2d);
+    brain.disparity = reshape(bd, [nx, ny]);
+    
+    brain.volume = abs(quantile(brain.disparity(:),0.95) - quantile(brain.disparity(:),0.05));
+    brain.image = image;
+    
