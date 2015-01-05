@@ -45,24 +45,21 @@ function image = loadImages(path, image)
                 %%read depth 
                 if (exist(depth1, 'file'))                
                     dispmap = double(imread(depth1));
+                    
                     mb_fl_pix       = 3740; %from middlebury documentation
                     mb_baseline_mm  = 160;
                 
                     fp = fopen(dmin1);
                     dmin =  fscanf(fp, '%f');
                     fclose(fp);
-                    
-                    %This will be used to set zero disparity point in stereogram
-                    %presentation:
-                    %average disparity in pixels, divide by two to get shift for each image,
-                    %divide by 4 because l/r images are 1/4 the distance appart as disparity maps
-                    image.median_pixel_disparity = round(median((dispmap(~isnan(dispmap)))/2)/4);
-
-                    %% read new depth map    
+                %% read new mb's depth map and calibration info    
                 elseif (exist(depth2, 'file'))
                     dispmap = double(pfmread(depth2));
                     fp = fopen(dmin2);
-                    
+                    ncam = 2;
+                    camx = 3;
+                    camy = 3;
+                    cam = zeros(ncam, camx*camy);
                     tline = fgets(fp);
                     while (ischar(tline))
                         datatype = strtok(tline, '=');
@@ -73,6 +70,11 @@ function image = loadImages(path, image)
                                 dmax = sscanf(tline, 'vmax= %f');
                             case 'baseline'
                                 mb_baseline_mm = sscanf(tline, 'baseline= %f');
+                            case {'cam0', 'cam1'}
+                                [text, strvalue] = strtok(tline, '[');
+                                num = str2double(text(end - 1)) + 1;
+                                cam(num, :) = cell2mat(textscan((strvalue(2:end-2)), ...
+                                    '%f %f %f; %f %f %f; %f %f %f'));
                             otherwise
                         end
                         tline = fgets(fp);
@@ -84,7 +86,7 @@ function image = loadImages(path, image)
                     %divide by 4 because l/r images are 1/4 the distance appart as disparity maps
                     image.median_pixel_disparity = round(median((dispmap(~isinf(dispmap)))/2)/4);
                     dispmap(isinf(dispmap)) = NaN;
-                    mb_fl_pix = 3740; % how to get it from file
+                    mb_fl_pix = sum(cam(:, 1))/2;
                     
                 else
                     fprintf('No depth map, skipping the file');
@@ -102,7 +104,13 @@ function image = loadImages(path, image)
     
                 %divide disparity by 4 because l/r images are 1/4 the distance appart as disparity maps 
                 image.dispmap = dispmap./4;
-    
+                %pixel per degree
+                p = 0.5; 
+                %arcmin per pixel
+                theta = 2*atan2(p, mb_fl_pix)*(180/pi);
+                
+                %pixel per degree
+                image.pix_per_deg = theta;
             case 'live'
                 
                 %expected full filename and path
@@ -127,6 +135,20 @@ function image = loadImages(path, image)
                 %this will be set later automatically in photoshop
                 image.median_pixel_disparity = 0;
                 
+                %camera details
+                d700_sensor = [36 23.9];
+                               
+                f = 20; %mm
+                %pix/mm
+                %camera was rotated and pictures were downsampled
+                downsampled_size = [2128, 1416];
+                pmm = d700_sensor(2)/downsampled_size(2);
+                
+                %arcmin per pix
+                theta = 2*atan2(pmm/2, f)*(180/pi);
+                %pix per degree
+                image.pix_per_deg = 60/theta;
+               
             case 'ut'
                 
                 findnumber = strfind(dir_name, '_');
@@ -142,6 +164,17 @@ function image = loadImages(path, image)
                 image.dispmap = 1./image.imZ;
                 image.imZOrig = image.imZ;
                 image.median_pixel_disparity = 0;
+                 %camera details
+                d700_sensor = [36 23.9];
+                
+                f = 20; %mm
+                %pix/mm
+                pmm = d700_sensor(1)/size(image.imRGB, 1);
+                %arcmin per pix
+                theta = 2*atan2(pmm/2, f)*(180/pi);
+                %pix per degree
+                image.pix_per_deg = theta;
+               
             otherwise
         end
     catch err

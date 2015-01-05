@@ -2,9 +2,9 @@ function analyseImgScales
     %absolute path should always work
     %check if relative location also works
     
-    abs_path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
-    abs_experiment_path = '~/Documents/MATLAB/scene-filter-see/PerceptualExperiment/Data';
-    abs_path_res = '~/Documents/MATLAB/scene-filter-see/ImageAnalysis/Result/';
+    abs_path = '~/Documents/MATLAB/scene-filter-see_dev/ImageManipulation/Images/Originals';
+    abs_experiment_path = '~/Documents/MATLAB/scene-filter-see_dev/PerceptualExperiment/Data';
+    abs_path_res = '~/Documents/MATLAB/scene-filter-see_dev/ImageAnalysis/Result/';
 
     rel_path = '../Images/Originals';
     rel_experiment_path = '../../PerceptualExperiment/Data';
@@ -106,40 +106,43 @@ function analyseImgScales
                 pyr_tp_orig(:, :, idx) = pyr_tp.ld_corr - pyr_orig.ld_corr;
                 pyr_orig_ap(:, :, idx) = pyr_orig.ld_corr - pyr_ap.ld_corr;
                 
-%                 validIdx = ~isnan(orig.imZOrig);
-%                 
-%                 lum_orig = rgb2gray(orig.imRGB.^2.2);
-%                 corr_orig = corr(lum_orig(validIdx), orig.imZOrig(validIdx));
-%                 sf0 = 1/size(lum_orig, 2);
-% 
-%                 %% display depth/luminance corr and mean luminance
-%                 f = figure('Name', listing(l).name, 'visible', 'off');           
-%                 f1 = subplot(2, 1, 1);
-%                 title(f1, 'Luminance-depth correlation at different scales'); hold on;
-%                 xlabel(f1, 'spatial frequency, fine to coarse'); hold on;
-%                 ylabel(f1, 'Luminance-depth correlation'); hold on;
-%                 
-%                 markers = {'o', '*', '+'};
-%                 scatter(sf0, corr_orig, 'Marker', '^');
-%                 for p = 1:nPyrs
-%                     validP = ~isnan(pyr_orig.ld_corr(p, :));
-%                     scatter(pyr_orig.sf(p, validP), pyr_orig.ld_corr(p, validP), 'Marker', markers{p}); hold on;    
-%                 end
-%                 legend('Original','Laplacian', 'Wavelet', 'Steerable');
-%         
-%                        
-%                 f2 = subplot(2, 1, 2);
-%                 title(f2, 'Mean luminance at different scales'); hold on;
-%                 xlabel(f2, 'spatial frequency, fine to coarse'); hold on;
-%                 ylabel(f2, 'Mean'); hold on;
-%                 scatter(sf0, mean(mean(normM(lum_orig))), 'Marker', '^');
-%                 for p = 1:nPyrs
-%                     scatter(pyr_orig.sf(p, :), pyr_orig.mean_lum(p, :), 'Marker', markers{p}); hold on;    
-%                 end
-%                 legend('Original', 'Laplacian', 'Wavelet', 'Steerable');
-%             
-%                 export_fig(f, strcat(result_path, listing(l).name,'.eps'), '-transparent');
-%                 close(f);               
+                validIdx = ~isnan(orig.imZOrig);
+                
+                lum_orig = rgb2gray(orig.imRGB.^2.2);
+                corr_orig = corr(lum_orig(validIdx), orig.imZOrig(validIdx));
+                sf0 = 1/size(lum_orig, 2);
+
+                %% display depth/luminance corr and mean luminance
+                f = figure('Name', listing(l).name, 'visible', 'off');           
+                f1 = subplot(2, 1, 1);
+                title(f1, 'Luminance-depth correlation at different scales'); hold on;
+                xlabel(f1, 'spatial frequency, fine to coarse'); hold on;
+                ylabel(f1, 'Luminance-depth correlation'); hold on;
+                
+                markers = {'o', '*', '+'};
+                scatter(sf0, corr_orig, 'Marker', '^');
+                for p = 1:nPyrs
+                    validP = ~isnan(pyr_orig.ld_corr(p, :));
+                    plot(pyr_orig.sf(p, validP), pyr_orig.ld_corr(p, validP), 'Marker', markers{p}); hold on; 
+                    plot(pyr_tp.sf(p, validP), pyr_orig.ld_corr(p, validP), 'Marker', markers{p}); hold on; 
+                    plot(pyr_ap.sf(p, validP), pyr_orig.ld_corr(p, validP), 'Marker', markers{p}); hold on; 
+                  
+                end
+                legend('Original','Laplacian', 'Wavelet', 'Steerable');
+        
+                       
+                f2 = subplot(2, 1, 2);
+                title(f2, 'Mean luminance at different scales'); hold on;
+                xlabel(f2, 'spatial frequency, fine to coarse'); hold on;
+                ylabel(f2, 'Mean'); hold on;
+                scatter(sf0, mean(mean(normM(lum_orig))), 'Marker', '^');
+                for p = 1:nPyrs
+                    plot(pyr_orig.sf(p, :), pyr_orig.mean_lum(p, :), 'Marker', markers{p}); hold on;    
+                end
+                legend('Original', 'Laplacian', 'Wavelet', 'Steerable');
+            
+                export_fig(f, strcat(result_path, listing(l).name,'.eps'), '-transparent');
+                close(f);               
             end
         end
         pyrX = cat(3, pyr_tp_ap, pyr_tp_orig, pyr_orig_ap);

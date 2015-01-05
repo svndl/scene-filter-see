@@ -1,10 +1,10 @@
 function DepthLumCorrScales
 
 %% read the directory
-    mpath = userpath;
     %path = strcat(mpath(1:end - 1),'/scene-filter-see/ImageManipulation/Images/Originals');
     
-    path = '~/Documents/MATLAB/scene-filter-see/ImageManipulation/Images/Originals';
+    path = '~/Documents/MATLAB/scene-filter-see_dev/ImageManipulation/Images/Originals';
+    res_path = '~/Documents/MATLAB/scene-filter-see_dev/ImageAnalysis/Result/';
 
     listing = dir(path);
     
@@ -56,11 +56,11 @@ function DepthLumCorrScales
                 scatter(1:sum(validP), pyr_orig.ld_corr(p, validP), 'Marker', markers{p}); hold on;
                 axis([0 6 -0.25 0.25]);
              end
-            %legend('Original','Laplacian', 'Wavelet', 'Steerable');            
+            legend('Original','Laplacian', 'Wavelet', 'Steerable');            
         end
-    saveas(f1, [path 'scatter'], 'pdf');
+    saveas(f1, [res_path 'scatter'], 'pdf');
     close(f1);
-    %%plotting the lines
+    %% plotting the lines
     
     f2 = figure('visible', 'on');
     subplot(1, 3, 1);
@@ -88,7 +88,7 @@ function DepthLumCorrScales
     ylabel('Luminance-depth correlation'); hold on;
     
     plot(steerable', 'Marker', markers{3}); hold on;
-    saveas(f2, [path 'lineplot'], 'pdf');
+    saveas(f2, [res_path 'lineplot'], 'pdf');
     close(f2);
     
     %% split and plot
@@ -113,8 +113,8 @@ function DepthLumCorrScales
     xlabel('spatial frequency, fine to coarse'); hold on;
     ylabel('Luminance-depth correlation'); hold on;
     plot(l_rise', 'Marker', markers{1}); hold on;
-    lp = legend(scenes{l_pos}); hold on;
-    set(lp, 'Interpreter', 'none');
+%     lp = legend(scenes{l_pos}); hold on;
+%     set(lp, 'Interpreter', 'none');
     
     subplot(1, 3, 2);
     title('Falling'); hold on;
@@ -122,8 +122,8 @@ function DepthLumCorrScales
     xlabel('spatial frequency, fine to coarse'); hold on;
     ylabel('Luminance-depth correlation'); hold on;    
     plot(l_fall', 'Marker', markers{1}); hold on;
-    ln = legend(scenes{l_neg}); hold on;
-    set(ln, 'Interpreter', 'none');
+%     ln = legend(scenes{l_neg}); hold on;
+%     set(ln, 'Interpreter', 'none');
 
     subplot(1, 3, 3);
     title('Mixed'); hold on;
@@ -131,9 +131,9 @@ function DepthLumCorrScales
     xlabel('spatial frequency, fine to coarse'); hold on;
     ylabel('Luminance-depth correlation'); hold on;
     plot(l_inc', 'Marker', markers{1}); hold on;
-    li = legend(scenes{~(l_pos+l_neg)}); hold on;
-    set(li, 'Interpreter', 'none');
-    saveas(f3, [path 'l_rfi'], 'pdf');
+%     li = legend(scenes{~(l_pos+l_neg)}); hold on;
+%     set(li, 'Interpreter', 'none');
+    saveas(f3, [res_path 'l_rfi'], 'pdf');
     close(f3);
     %% wavelet
     
@@ -146,8 +146,8 @@ function DepthLumCorrScales
     xlabel('spatial frequency, fine to coarse'); hold on;
     ylabel('Luminance-depth correlation'); hold on;
     plot(w_rise', 'Marker', markers{2}); hold on;
-    wp = legend(scenes{w_pos}); hold on;
-    set(wp, 'Interpreter', 'none');
+%     wp = legend(scenes{w_pos}); hold on;
+%     set(wp, 'Interpreter', 'none');
     
     subplot(1, 3, 2);
     title('Falling'); hold on;
@@ -155,8 +155,8 @@ function DepthLumCorrScales
     xlabel('spatial frequency, fine to coarse'); hold on;
     ylabel('Luminance-depth correlation'); hold on;
     plot(w_fall', 'Marker', markers{2}); hold on;
-    wn = legend(scenes{w_neg}); hold on;
-    set(wn, 'Interpreter', 'none');
+%     wn = legend(scenes{w_neg}); hold on;
+%     set(wn, 'Interpreter', 'none');
     
     subplot(1, 3, 3);
     title('Mixed'); hold on;
@@ -164,10 +164,10 @@ function DepthLumCorrScales
     xlabel('spatial frequency, fine to coarse'); hold on;
     ylabel('Luminance-depth correlation'); hold on;    
     plot(w_inc', 'Marker', markers{2}); hold on;
-    wi = legend(scenes{~(w_pos + w_neg)}); hold on;
-    set(wi, 'Interpreter', 'none');
+%     wi = legend(scenes{~(w_pos + w_neg)}); hold on;
+%     set(wi, 'Interpreter', 'none');
     
-    saveas(f4, [path 'w_rfi'], 'pdf');
+    saveas(f4, [res_path 'w_rfi'], 'pdf');
     close(f4);
     catch err
         disp('analyseImgScales:Error loading ');

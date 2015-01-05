@@ -14,7 +14,9 @@ switch env.feature
         e_dark = e_bright;
     case 'disp'
         % binocular disparities in the Van Hateren dataset
-        load([paths.env '/nss_basic.mat']);
+        %load([paths.env '/nss_basic.mat']);
+        load('nss_basic.mat');
+        
         disp_limit = 60; %(arminutes)
         x = linspace(-disp_limit, disp_limit, numsamples);
         Xz = linspace(-disp_limit, disp_limit, length(vh.Xz(2:end - 1)));

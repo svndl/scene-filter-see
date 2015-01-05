@@ -1,4 +1,4 @@
-
+function plotScenesScales
     %absolute path should always work
     %check if relative location also works
     
@@ -64,44 +64,44 @@
             sf0 = 1/size(lum_orig, 2);
 
             %% display depth/luminance corr and mean luminance
-            f = figure('Name', listing(l).name, 'visible', 'on');           
                 
-            markers = {'o', '*', '+'};
-            %scatter(sf0, corr_orig, 'Marker', '^');
-            for p = 1:nPyrs
-                f1 = subplot(3, 2, 2*p - 1);
-                title(f1, pyramids{p}); hold on
-                xlabel(f1, 'spatial frequency, fine to coarse'); hold on;
-                ylabel(f1, 'Luminance-depth value' ); hold on;
-                
-                validP = ~isnan(pyr_orig.ld_corr(p, :));
-                options = {'Marker', markers{p}, 'Linewidth', 1};
-                plot(pyr_orig.sf(p, validP), pyr_orig.ld_corr(p, validP), '-.g', options{:}); hold on; 
-                plot(pyr_tp.sf(p, validP), pyr_tp.ld_corr(p, validP),'-.b', options{:}); hold on; 
-                plot(pyr_ap.sf(p, validP), pyr_ap.ld_corr(p, validP), '-.r', options{:}); hold on;   
-            end
-            legend('Original','Enhanced', 'Degraded');
+%             markers = {'o', '*', '+'};
+%             %scatter(sf0, corr_orig, 'Marker', '^');
+%             xLabel = 'spatial frequency, fine to coarse';
+%             yLabel = 'Luminance-depth correlation';
+%             
+%             
+%             for p = 1:nPyrs
+%                 f1 = subplot(3, 2, 2*p - 1);
+%                 title(f1, pyramids{p}); hold on
+%                 xlabel(f1, 'spatial frequency, fine to coarse'); hold on;
+%                 ylabel(f1, 'Luminance-depth value' ); hold on;
+%                 
+%                 validP = ~isnan(pyr_orig.ld_corr(p, :));
+%                 options = {'Marker', markers{p}, 'Linewidth', 1};
+%                 plot(1:length(pyr_orig.sf(p, validP)), pyr_orig.ld_corr(p, validP), '-.g', options{:}); hold on; 
+%                 plot(1:length(pyr_tp.sf(p, validP)), pyr_tp.ld_corr(p, validP),'-.b', options{:}); hold on; 
+%                 plot(1:length(pyr_ap.sf(p, validP)), pyr_ap.ld_corr(p, validP), '-.r', options{:}); hold on;   
+%             end
+%             legend('Original','Enhanced', 'Degraded');
         
                        
-            %scatter(sf0, mean(mean(normM(lum_orig))), 'Marker', '^');
-            for p = 1:nPyrs
-                f2 = subplot(3, 2, 2*p);
-                title(f2, pyramids{p}); hold on;
-                xlabel(f2, 'spatial frequency, fine to coarse'); hold on;
-                ylabel(f2, 'Mean'); hold on;
-                options = {'Marker', markers{p}, 'Linewidth', 1};
-                validP = ~isnan(pyr_orig.ld_corr(p, :));
-                plot(pyr_orig.sf(p, validP), pyr_orig.mean_lum(p, validP), '.-.g', options{:}); hold on;
-                plot(pyr_tp.sf(p, validP), pyr_tp.mean_lum(p, validP), '.-.b', options{:}); hold on;    
-                plot(pyr_ap.sf(p, validP), pyr_ap.mean_lum(p, validP), '.-.r', options{:}); hold on;    
-            end
-            legend('Original', 'Enhanced', 'Degraded');
+%             %scatter(sf0, mean(mean(normM(lum_orig))), 'Marker', '^');
+%             for p = 1:nPyrs
+%                 f2 = subplot(3, 2, 2*p);
+%                 title(f2, pyramids{p}); hold on;
+%                 xlabel(f2, 'spatial frequency, fine to coarse'); hold on;
+%                 ylabel(f2, 'Mean'); hold on;
+%                 options = {'Marker', markers{p}, 'Linewidth', 1};
+%                 validP = ~isnan(pyr_orig.ld_corr(p, :));
+%                 plot(1:length(pyr_orig.sf(p, validP)), pyr_orig.mean_lum(p, validP), '.-.g', options{:}); hold on;
+%                 plot(1:length(pyr_tp.sf(p, validP)), pyr_tp.mean_lum(p, validP), '.-.b', options{:}); hold on;    
+%                 plot(1:length(pyr_ap.sf(p, validP)), pyr_ap.mean_lum(p, validP), '.-.r', options{:}); hold on;    
+%             end
+%             legend('Original', 'Enhanced', 'Degraded');
             
-            export_fig(f, strcat(result_path, listing(l).name,'.eps'), '-transparent');
-            close(f);               
         end
-        pyrX = cat(3, pyr_orig, pyr_tp, pyr_ap);
-        save(strcat(result_path, 'pyrScaleAllImgs.mat'), 'pyrX');
+        save(strcat(result_path, 'pyrScaleAllImgs.mat'), 'pyr_orig', 'pyr_tp', 'pyr_ap');
         
     catch err
         disp('plotScenesScales:Error loading ');
@@ -110,4 +110,26 @@
         disp(err.stack(1));
         disp(err.stack(2));
     end
-      
+ end  
+% function plot_scene(name, res_path,  xData, yData, xLabel, yLabel)
+%     
+%     f = figure('Name',name, 'visible', 'on');           
+%     pyramids = {'Original','Enhanced', 'Degraded'};
+%     nPyrs = length(pyramids);
+%     markers = {'o', '*', '+'};
+%     color_opts = {'-.g', '-.b', '-.r'};
+%     for p = 1:nPyrs
+%         f1 = subplot(3, 2, 2*p - 1);
+%         title(f1, pyramids{p}); hold on
+%         xlabel(f1, xLabel); hold on;
+%         ylabel(f1, yLabel); hold on;
+%                 
+%         options = {'Marker', markers{p}, 'Linewidth', 1};
+%         for i = length(xData)
+%             plot(1:length(xData{i}), yData{i}, color_opts{i}, options{:}); hold on;
+%         end
+%     end
+%     legend(pyramids{:});
+%     export_fig(f, strcat(res_path, name,'.eps'), '-transparent');
+%     close(f);                   
+% end

@@ -52,7 +52,6 @@ elseif (~loadit || ~checkit)
             display(['Loading ' all_images(x).name '...']);
             percept     = process_perceptual_data(percept, dat, trl, sn, x); % compute percent more 3D for each comparison
             img(x)    = load_image_data(paths, percept.scene_name{x});  % get image and depth map for analysis
-            
         end
     end
 
@@ -118,12 +117,14 @@ switch usr_input
             load([paths.results '/brain_model_results_picture.mat'])
             load([paths.results '/brain_model_all_picture.mat'])
         else
-            fprintf('Running brain model based picture analysis \n');
+            fprintf('Running brain model based picimgure analysis \n');
             [model, brain, pred] = model_brain(img, paths, 1);
+            %save brain resp
+            save([paths.results '/brain_model_results_picture.mat'],'paths', 'percept', 'pred','img');
+            save([paths.results '/brain_model_all_picture.mat'],'paths', 'brain');            
         end
         
-        do_plot(pred, percept, paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
-        
+        do_plot(pred, percept, paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001], 0);   
         % generate figure illustrating brain model
         do_plot_model(paths, model, brain);
     case 4
@@ -142,9 +143,10 @@ switch usr_input
             load([paths.results '/brain_model_results_world.mat'])
         else
             fprintf('Running brain model based world analysis \n');
-            [model, brain, pred] = model_brain(img,paths,0);
+            [model, brain, pred] = model_brain(img, paths, 0);
+            save([paths.results '/brain_model_results_world.mat'],'paths','model', 'pred');            
         end
-        do_plot(pred, percept, paths, 'Model-Based Brain World Responses', [-0.0001 0.0001],0);
+        do_plot(pred, percept, paths, 'Model-Based Brain World Responses', [-0.0001 0.0001], 0);
     case 5
         fprintf('Performing luminance manipulation and no other analyses \n');
         manipulateLuminanceAllImages;
@@ -171,9 +173,10 @@ if(strcmp(current_folder,'DoAnalysis'))
     
 else
     warning('You are not in the scene-filter-see home directory, looking for the full path');
-    m_userpath = userpath;
+    m_userpath = strtok(userpath, ':');
     % get the ':' out of userpath
-    paths.home = strcat(m_userpath(1:end - 1), '/scene-filter-see/');
+    
+    paths.home = strcat(m_userpath, '/scene-filter-see_dev/');
     
     if(exist(paths.home,'dir'))
         addpath(genpath(paths.home));

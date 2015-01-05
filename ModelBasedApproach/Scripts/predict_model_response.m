@@ -30,9 +30,9 @@ model = build_model_cell_population(env, model);
 if(testing)
     
     % noise image and depth map
-    image.pixels    = mkFract(124,1.2);
+    image.pixels    = mkFract(24,1.2);
     image.pixels    = (image.pixels - min(image.pixels(:)))./range(image.pixels(:));
-    image.depth     = mkFract(124,1);
+    image.depth     = mkFract(24,1);
     image.depth    = (image.depth - min(image.depth(:)))./range(image.depth(:));
     image.depth     = 5*(image.depth - 0.5) + 5;
     
@@ -55,10 +55,11 @@ else
     end
 end
 
-image = convert_image_to_rgc_response(image);
-image = convert_depth_to_disparity(image);
+image.pixels = convert_image_to_rgc_response(image.pixels);
+image.depth = convert_depth_to_disparity(image.depth);
 
-brain = apply_model_to_image(model,image);
+brain = apply_model_to_image_old(model,image.pixels, image.depth);
+brain1 = apply_model_to_image(model,image.pixels, image.depth);
 
 if(trueplot)
     figure;  hold on;

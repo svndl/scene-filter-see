@@ -29,7 +29,8 @@ if(~isequal(size(x), size(w)))
 end
 
 % Check that all of W are non-negative.
-if (any(w(:)<0))
+eps = -1e-10;
+if (any(w(:)<eps))
     error('All weights, W, must be non-negative.');
 end
 

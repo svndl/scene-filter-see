@@ -1,8 +1,8 @@
-function do_plot_model(paths,model0,brain)
+function do_plot_model(paths, model, brain)
 
 % load environmental distributions
 env.feature = 'disp';
-env         = get_environ_stats(paths,env.feature); % env has the following fields: bright, dark, all, rng
+env         = get_environ_stats(paths,env); % env has the following fields: bright, dark, all, rng
 
 % set up default brain model properties
 model.N           = 11;                              % number of neurons for simulation

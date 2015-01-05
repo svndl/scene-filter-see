@@ -56,13 +56,18 @@ display([ title 'plot has been generated and saved to Results'])
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function plot_correl(x,y,c,tle,doline,limX)
+% remove zeros (scenes that has not been rated)
 
-plot(x,y,'ko','MarkerFaceColor',c);
+Rated = abs(y)>0;
+nx = x(Rated);
+ny = y(Rated);
+
+plot(nx,ny,'ko','MarkerFaceColor',c);
 
 if(doline)
     lh = lsline;
     set(lh,'color',c)
-    [r,p] = corr(x',y');
+    [r,p] = corr(nx',ny');
     text(2*range(limX)/3 + min(limX),40,['r = ' num2str(r,2)]);
     text(2*range(limX)/3 + min(limX),35,['p = ' num2str(p,2)]);
 end
@@ -71,6 +76,14 @@ plot([-2 2],[50 50],'k:');
 plot([0 0],[25 75],'k:');
 
 ylim([25 75]); xlim(limX); box on; axis square;
+
+%     nx = x(abs(x)>0);
+%     ny = y(abs(y)>0);
+%     [p, S, mu] = polyfit(nx, ny, 1);
+%     [yfit, ~] = polyval(p, nx ,S, mu);
+%     plot(nx, yfit, 'color',c);
+
+
 title(tle);
 xlabel('Predictor Magnitude');
 ylabel('Percent judged more 3D');
