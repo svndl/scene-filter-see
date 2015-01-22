@@ -6,7 +6,7 @@ function [model, brain, pred] = model_brain(image,paths,picturetrue)
 
 % load in natural scene statistics as model of the brain's visual experience
 env.feature = 'disp';
-env         = get_environ_stats(paths,env.feature); % env has the following fields: bright, dark, all, rng
+env         = get_environ_stats(paths,env); % env has the following fields: bright, dark, all, rng
 
 
 % set up brain model properties
@@ -17,7 +17,7 @@ model.popGain     = 'optimal';                        % cell population response
 
 model = build_model_cell_population(env, model);
 
-sz = [50 50]; % this should be enough to prevent cropping from the two filtering stages
+sz = [150 150]; % this should be enough to prevent cropping from the two filtering stages
 
 % apply brain model to images
 for x = 1:length(image)
@@ -37,19 +37,15 @@ for x = 1:length(image)
     if picturetrue
         depth = zeros(sz);  % without depth map
     else
-        depth = imresize(image(x).depth,sz); % with depth map
+        d = inpaint_nans(image(x).depth, 3);
+        depth = imresize(d,sz); % with depth map
     end
     
-    % pad images before filtering
-    orig = padarray(orig,[50 50]);
-    enh = padarray(enh,[50 50]);
-    deg = padarray(deg,[50 50]);
-    depth = padarray(depth,[50 50]);
-    
-    % run images through brain model
-    brain(x).orig  = apply_model_to_image(model,orig,depth);
-    brain(x).enh  = apply_model_to_image(model,enh,depth);
-    brain(x).deg  = apply_model_to_image(model,deg,depth);
+    version = 'newRGC';
+	% run images through brain model
+	brain(x).orig = calcModel(model, orig, depth, version);  
+	brain(x).enh  = calcModel(model, enh, depth, version);
+    brain(x).deg  = calcModel(model, deg, depth, version);
 
     % get overall scene volume from brain
     resp_orig(x) = brain(x).orig.volume;

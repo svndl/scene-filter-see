@@ -1,4 +1,4 @@
-function im = convert_image_to_rgc_response(im)
+function im = convert_image_to_rgc_response_old(im)
 
 % set up simulated RGC receptive fields
 % NOTE: Should add step to convert SIGMA in to arcminutes, using study
