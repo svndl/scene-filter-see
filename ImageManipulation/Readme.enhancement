@@ -1,1 +1,54 @@
+I. Requirements.
+Matlab is required to run the code. Third-party software might be required to process the depth maps(inpaint_nans.m), if this folder is separated from the scene-filter-see project.  
 
+II. Brief description.
+This folder contains the code that performs depthmap-based image enhancement or degradation. 
+
+III. Running the code.
+  a) Call syntax is edited = manipulateLuminance(path_to_scene, manipulation_Flag);.
+  Function is located in manipulateLuminance.m matlab file.
+
+  b) Input arguments description.
+    path_to_scene -- full path to directory that contains linear image and corresponding depth map.
+    manipulation_Flag -- 'tp'/Enhancement, or 'ap'/Degradation.
+
+  c) Output argument description. 
+    edited is a matlab structure that contains the following data, accessible by point (.) operator.
+    edited.name -- folder's name.
+    edited.loadpath -- full absolute path to the folder.
+    edited.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    edited.imRGB  -- original right image in 3D matlab matrix format (width, height, channels).
+    edited.imRGBLeft -- original left image in 3D matlab matrix format (width, height, channels).
+    edited.imZOrig -- original right depthmap in 2D matlab matrix format (width, height).
+    edited.imZ -- processed original depthmap in 2D matlab matrix format (width, height).
+    edited.dispmap -- right processed depthmap in disparity units in 2D matlab matrix format (width, height).
+    edited.median_pixel_disparity -- mdeian pixel disparity, double.
+    edited.imRGBNew -- right image in 3D matlab matrix format (width, height, channels) after enhancement or degradation.
+    edited.imV -- value channel (luminance) of right image before the enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imVnew -- value channel (luminance) of right image after enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imS -- enhancement/degradation modification mask in 2d matlab matrix format(width, height). 
+    edited.pix_per_deg -- original scene's pixel per degree value. 
+    edited.flag -- manipulation flag
+  
+  d) Examples of running the code can be found in manipulateLuminanceAllImages.m or at DoAnalysis/do_analysis.m function.
+
+IV. Structure of /scene-filter-see/ImageManipulation
+For more info see readme.structure.
+
+/Images/Originals contains Middlebury and Live3D scenes.
+/Images/TowardsThePrior contains enhanced Middlebury and Live3D scenes.
+/Images/AwayFromThePrior contains degraded Middlebury and Live3D scenes.
+
+List of /scene-filter-see/ImageManipulation/Scripts example stripts:
+manipulateLuminanceAllImages.m
+
+List of /scene-filter-see/ImageManipulation/Scripts
+
+CalcAndStoreCorrelations.m
+cleanDepth.m
+cropImages.m
+determineSlope.m
+loadImages.m
+manipulateLuminance.m
+pfmread.m
+saveImages.m
