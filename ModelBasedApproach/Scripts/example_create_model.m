@@ -10,8 +10,7 @@ env.feature      = 'disp';
 % env.all
 % env.rng
 
-numsamples = 1001;
-env = get_environ_stats(env.feature, numsamples);
+env = get_environ_stats(env.feature);
 
 % set up brain model to use
 
