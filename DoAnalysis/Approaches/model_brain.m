@@ -6,7 +6,7 @@ function [model, brain, pred] = model_brain(image,paths,picturetrue)
 
 % load in natural scene statistics as model of the brain's visual experience
 env.feature = 'disp';
-env         = get_environ_stats(paths,env); % env has the following fields: bright, dark, all, rng
+env         = get_environ_stats(env); % env has the following fields: bright, dark, all, rng
 
 
 % set up brain model properties
