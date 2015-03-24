@@ -1,0 +1,185 @@
+I. List of /scene-filter-see/ImageManipulation/Scripts
+
+CalcAndStoreCorrelations.m
+cleanDepth.m
+cropImages.m
+determineSlope.m
+loadImages.m
+manipulateLuminance.m
+manipulateLuminanceAllimages.m
+pfmread.m
+saveImages.m
+
+II. Brief description of all functions and its paramters.
+
+function CalcAndStoreCorrelations(image)
+  Function will compute and store the DIFFERENCE in luminance-depth correlation between the two versions of the scene.
+  Data will me stored in luminanceDepthCorrelations.mat and luminanceDepthVariances.mat,
+  Input image  should be a structure with the following data fields:
+    image.imRGB  -- original image in 3d matlab matrix format.
+    image.imRGBnew  -- manipulated image in 3d matlab matrix format.
+    image.imZOrig -- original depth map in 2d matlab matrix. 
+    image.loadpath -- absolute path to the directory that contains the original image and the original depth map.   
+    image.flag -- manipulation flag.
+    
+function cleaned  = cleanDepth(edited). 
+  Function will normalize the original depth and disparity  maps(edited.imZOrig, edited.dispmap) 
+  to .01 and .99 quantiles to get rid outliers and nans. Function will use third-party package called inpaint_nans.m for 
+  interpolating NaN values in the original depth map.
+  Input edited should be a structure with the following data fields:
+    edited is a matlab structure that contains the following data, accessible by point (.) operator.
+    edited.name -- folder's name.
+    edited.loadpath -- full absolute path to the folder.
+    edited.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    edited.imRGB  -- original right image in 3D matlab matrix format (width, height, channels).
+    edited.imRGBLeft -- original left image in 3D matlab matrix format (width, height, channels).
+    edited.imZOrig -- original right depthmap in 2D matlab matrix format (width, height).
+    edited.imZ -- processed original depthmap in 2D matlab matrix format (width, height).
+    edited.dispmap -- right processed depthmap in disparity units in 2D matlab matrix format (width, height).
+    edited.median_pixel_disparity -- mdeian pixel disparity, double.
+    edited.imRGBNew -- right image in 3D matlab matrix format (width, height, channels) after enhancement or degradation.
+    edited.imV -- value channel (luminance) of right image before the enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imVnew -- value channel (luminance) of right image after enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imS -- enhancement/degradation modification mask in 2d matlab matrix format(width, height). 
+    edited.pix_per_deg -- original scene's pixel per degree value. 
+    edited.flag -- manipulation flag.
+    Output cleaned is the copy of input structure, except for cleaned.imZ and cleaned.dispmap, that don't contain any outliers and can be used for enhancement.
+  Function is called by manipulateLuminance.m script.
+
+function cropped = cropImages(edited)
+  Function will crop to square the original images and depth and disparity maps (edited.imRGB, edited.imRGBLeft, 
+  edited.imZOrig, edited.imZ, edited.dispmap). Crop will be performed on both sides, same for all said matrices.
+  Input image should be a structure with the following data fields:
+    edited is a matlab structure that contains the following data, accessible by point (.) operator.
+    edited.name -- folder's name.
+    edited.loadpath -- full absolute path to the folder.
+    edited.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    edited.imRGB  -- original right image in 3D matlab matrix format (width, height, channels).
+    edited.imRGBLeft -- original left image in 3D matlab matrix format (width, height, channels).
+    edited.imZOrig -- original right depthmap in 2D matlab matrix format (width, height).
+    edited.imZ -- processed original depthmap in 2D matlab matrix format (width, height).
+    edited.dispmap -- right processed depthmap in disparity units in 2D matlab matrix format (width, height).
+    edited.median_pixel_disparity -- mdeian pixel disparity, double.
+    edited.imRGBNew -- right image in 3D matlab matrix format (width, height, channels) after enhancement or degradation.
+    edited.imV -- value channel (luminance) of right image before the enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imVnew -- value channel (luminance) of right image after enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imS -- enhancement/degradation modification mask in 2d matlab matrix format(width, height). 
+    edited.pix_per_deg -- original scene's pixel per degree value. 
+    edited.flag -- manipulation flag.
+  Output cropped is the copy of input structure, except for (edited.imRGB, edited.imRGBLeft, 
+  edited.imZOrig, edited.imZ, edited.dispmap).
+  Function is called by manipulateLuminance.m script.
+
+function [slope] = determineSlope(z, medianZ, maxZ).
+  Function will calculate the slope of enhancement or degradation.
+  Input parameters: 
+    z -- current pixel value of the depth map (cleaned, cropped).
+    medianZ -- median value of the depth map (cleaned, cropped).
+    maxZ -- maximum value of the depth map (cleaned, cropped).
+
+  Output: 
+    slope - divisor(enhancement, < 1) /multiplier(degrador) for the current pixel value channel of the image. 
+  
+function image = loadImages(path, image).
+  Function will read the Middlebury/Live3D stereo scenes. 
+  IMPORTANT: If you want to use other 3D scenes, you'll have to supply your own image loader!  
+  Input parameters:
+    path -- absolute path to the directory with stereo pair, depth maps and calibration info.
+    image -- empty structure to be filled during the loading process.Structure that contains the following data,
+    accessible by point (.) operator.
+    image.name -- folder's name.
+    image.loadpath -- full absolute path to the folder.
+    image.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    image.imRGB  -- 0 (to be filled).
+    image.imRGBLeft -- 0 (to be filled).
+    image.imZOrig -- 0 (to be filled).
+    image.imZ -- 0 (to be filled).
+    image.dispmap -- 0 (to be filled).
+    image.median_pixel_disparity -- 0 (to be filled).
+    image.imRGBNew -- 0 (to be filled).
+    image.imV -- 0 (to be filled).
+    image.imVnew -- 0 (to be filled).
+    image.imS -- 0 (to be filled).
+    image.pix_per_deg -- 0 (to be filled).
+    image.flag -- 0 (to be filled).
+  Output:
+    image -- same structure where each field is filled with data, relevant to loaded image.
+    image.name -- folder's name.
+    image.loadpath -- full absolute path to the folder.
+    image.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    image.imRGB  -- original right image in 3D matlab matrix format (width, height, channels).
+    image.imRGBLeft -- original left image in 3D matlab matrix format (width, height, channels).
+    image.imZOrig -- original right depthmap in 2D matlab matrix format (width, height).
+    image.imZ -- original original depthmap in 2D matlab matrix format (width, height).
+    image.dispmap -- right processed depthmap in disparity units in 2D matlab matrix format (width, height).
+    image.median_pixel_disparity -- mdeian pixel disparity, double.
+    image.imRGBNew -- 0 (to be filled).
+    image.imV -- 0 (to be filled).
+    image.imVnew -- 0 (to be filled).
+    image.imS -- 0 (to be filled).
+    image.pix_per_deg -- original scene's pixel per degree value. 
+    image.flag -- 0 (to be filled).
+  Function is called by manipulateLuminance.m script.
+
+function edited = manipulateLuminance(loadpath, flag).
+  Function will load a stereopair, located at the loadpath and manipulate luminance, according to the flag.
+  Input:
+    loadpath -- absolute path to directory with stereopairs and depth maps. 
+    flag -- {'tp', 'ap'} -- manipulation flag.
+  Output:
+    edited is a matlab structure that contains the following data, accessible by point (.) operator.
+    edited.name -- folder's name.
+    edited.loadpath -- full absolute path to the folder.
+    edited.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    edited.imRGB  -- original right image in 3D matlab matrix format (width, height, channels).
+    edited.imRGBLeft -- original left image in 3D matlab matrix format (width, height, channels).
+    edited.imZOrig -- original right depthmap in 2D matlab matrix format (width, height).
+    edited.imZ -- processed original depthmap in 2D matlab matrix format (width, height).
+    edited.dispmap -- right processed depthmap in disparity units in 2D matlab matrix format (width, height).
+    edited.median_pixel_disparity -- mdeian pixel disparity, double.
+    edited.imRGBNew -- right image in 3D matlab matrix format (width, height, channels) after enhancement or degradation.
+    edited.imV -- value channel (luminance) of right image before the enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imVnew -- value channel (luminance) of right image after enhancement or degradation in 2D matlab matrix (width, height).
+    edited.imS -- enhancement/degradation modification mask in 2d matlab matrix format(width, height). 
+    edited.pix_per_deg -- original scene's pixel per degree value. 
+    edited.flag -- manipulation flag.
+  Function is called by manipulateLuminanceAllImages.m
+  Function calls loadImages.m, cropImages.m, cleanDepth.m, detertmioneSlope.m.
+
+function manipulateLuminanceAllImages  
+  Function will attempt to enhance and degrade images, contained in /Images/Originals. Results of manipulation will be saved in 
+  /Images/TowardsThePrior and /Images/AwayFromThePrior folders.
+  
+function img = pfmread(path_to_pfm_file)
+  Function will read a file in pfm format into a Matlab matrix.
+  Input parameters:
+   path_to_pfm_file -- absolute path to pfm file.
+  Output paramters:
+    img -- contents of pfm-file in matlab matrix format.
+  Function is called by loadImages.m, it reads depth maps for 2014 Middlebury database.
+
+function saveImages(image, storeCorrelation)
+  Function will save the results of luminance manipulation and/or calculates and strores new luminance-depth  correlation.
+  Input parameters:
+    image is a matlab structure that contains the following data, accessible by point (.) operator.
+    image.name -- folder's name.
+    image.loadpath -- full absolute path to the folder.
+    image.savepath -- full absolute path to the folder, where results of manipulation will be saved.
+    image.imRGB  -- original right image in 3D matlab matrix format (width, height, channels).
+    image.imRGBLeft -- original left image in 3D matlab matrix format (width, height, channels).
+    image.imZOrig -- original right depthmap in 2D matlab matrix format (width, height).
+    image.imZ -- processed original depthmap in 2D matlab matrix format (width, height).
+    image.dispmap -- right processed depthmap in disparity units in 2D matlab matrix format (width, height).
+    image.median_pixel_disparity -- mdeian pixel disparity, double.
+    image.imRGBNew -- right image in 3D matlab matrix format (width, height, channels) after enhancement or degradation.
+    image.imV -- value channel (luminance) of right image before the enhancement or degradation in 2D matlab matrix (width, height).
+    image.imVnew -- value channel (luminance) of right image after enhancement or degradation in 2D matlab matrix (width, height).
+    image.imS -- enhancement/degradation modification mask in 2d matlab matrix format(width, height). 
+    image.pix_per_deg -- original scene's pixel per degree value. 
+    image.flag -- manipulation flag.
+  image.imRGB, image.imRGBNew, image.imV, image.imVnew  will be saved as jpeg images.
+  image.imZOrig, image.imZ will be stored as mat-files.
+  storeCorrelation -- {0, 1} -- flag for storing the new correlations.
+  
+  Function is called by manipulateLuminanceAllImages.m.
+  Function calls CalcAndStoreCorelations.m.
