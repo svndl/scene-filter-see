@@ -55,10 +55,8 @@ else
     end
 end
 
-image = convert_image_to_rgc_response(image);
-image = convert_depth_to_disparity(image);
-
-brain = apply_model_to_image(model,image);
+rgcType = 'newRGC';
+brain = calcModel(model, image.pixels, image.depth,  rgcType);
 
 if(trueplot)
     figure;  hold on;
