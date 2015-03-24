@@ -1,0 +1,70 @@
+I. Requirements.
+Matlab is required to run the code. Third-party software might be required to process the depth maps(inpaint_nans.m), 
+and to run demo code(mPyrToolbox/mkFract.m) if this folder is separated from the scene-filter-see project.  
+
+II. Brief description.
+This folder contains the code that creates a population-based disparity model and applies it to a selected image.
+
+III. Running the code.
+  a) Call syntax is model_output = calcModel(population_model, input_image, input_depth_map, RGC_Type).
+  Function is located in calcModel.m matlab file. 
+  b) Input arguments description: 
+  population_model -- matlab structure, that contains population curves. Example can be found at example_create_model.m.
+  input_image -- image file in 2d matlab matrix.
+  input_depth_map -- 2d matlab matrix, same size as input image. Can be all zeros.
+  RGC_Type -- type of front-end processing. Current options are 'oldRGC' (basic DOG model) or 'newRGC' (Croner-Kaplan DOG model).
+  
+  c) Output argument description. 
+    model_output is a matlab structure that contains the following data, accessible by point (.) operator.
+    model_output.image is a sub-structrure with input and processed input:
+      model_output.image.rgc -- output of visual front-end. Same size as the original image.
+      model_output.image.pixels -- copy of input image.
+      model_output.image.depth -- copy of input depth map.
+      model_output.image.disparity -- depth map, converted to disparity units.
+      model_output.image.max -- max pixel value.
+    model_output.disparity -- decoded depth map, same size as input image.
+    model_output.volume -- decoded depth volume (difference between 5th and 95th quantile of decoded depth).
+  
+  e) Examples of running the code can be found in example_model_based_approach.m and predict_model_response.m. 
+
+  f) Correlating the model's output with the perceptual data is done by DoAnalysis/do_analysis.m function.
+
+IV. Structure.
+For more info see readme.structure.
+
+/EnvironStats/nss_basic.mat contains natural scene statistics.
+Utilized by get_envoron_stats.m function
+
+List of /Scripts example stripts:
+example_model_based_approach.m
+predict_model_response.m
+example_create_model.m
+
+List of /Scripts stripts related to model's calculations:
+
+calcModel.m
+convert_depth_to_disparity.m
+convert_depth_to_disparity_old.m
+convert_image_to_rgc_response_old.m
+convert_image_to_rgc_response.m
+
+List of /Scripts stripts related to model's construction:
+
+build_model_cell_population.m
+gaussian_tuning.m
+get_environ_stats.m
+make_gaussian_rf.m
+make_warping_function.m
+plot_tuning_curves.m
+set_response_gain.m
+Scripts/helper_function_modeling:
+compute_fisher.m
+compute_MI.m
+compute_MI_new.m
+determine_matched_gain.m
+get_normal_tuning_skew.m
+gen_normal_tuning.m
+plot_model.m
+set_generic_environmental_probs.m
+
+
