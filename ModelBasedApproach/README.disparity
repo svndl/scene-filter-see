@@ -32,15 +32,15 @@ III. Running the code.
 IV. Structure.
 For more info see readme.structure.
 
-/EnvironStats/nss_basic.mat contains natural scene statistics.
+/ModelBasedApproach/EnvironStats/nss_basic.mat contains natural scene statistics.
 Utilized by get_envoron_stats.m function
 
-List of /Scripts example stripts:
+List of /ModelBasedApproach/Scripts example stripts:
 example_model_based_approach.m
 predict_model_response.m
 example_create_model.m
 
-List of /Scripts stripts related to model's calculations:
+List of /ModelBasedApproach/Scripts stripts related to model's calculations:
 
 calcModel.m
 convert_depth_to_disparity.m
@@ -48,7 +48,7 @@ convert_depth_to_disparity_old.m
 convert_image_to_rgc_response_old.m
 convert_image_to_rgc_response.m
 
-List of /Scripts stripts related to model's construction:
+List of /ModelBasedApproach/Scripts stripts related to model's construction:
 
 build_model_cell_population.m
 gaussian_tuning.m
