@@ -1,1 +1,386 @@
 
+I. Script list.
+
+/ModelBasedApproach/EnvironStats/nss_basic.mat contains natural scene statistics.
+Utilized by get_envoron_stats.m function
+
+List of /ModelBasedApproach/Scripts example stripts:
+example_model_based_approach.m
+predict_model_response.m
+example_create_model.m
+
+List of /ModelBasedApproach/Scripts stripts related to model's calculations:
+
+calcModel.m
+convert_depth_to_disparity.m
+convert_depth_to_disparity_old.m
+convert_image_to_rgc_response_old.m
+convert_image_to_rgc_response.m
+
+List of /ModelBasedApproach/Scripts stripts related to model's construction:
+
+build_model_cell_population.m
+gaussian_tuning.m
+get_environ_stats.m
+make_gaussian_rf.m
+make_warping_function.m
+plot_tuning_curves.m
+set_response_gain.m
+Scripts/helper_function_modeling:
+compute_fisher.m
+compute_MI.m
+compute_MI_new.m
+determine_matched_gain.m
+get_normal_tuning_skew.m
+gen_normal_tuning.m
+plot_model.m
+set_generic_environmental_probs.m
+
+II. Description of functions.
+
+  a) /ModelBasedApproach/Scripts stripts related to model's construction:
+  
+    /helper_function_modeling/compute_MI.m.
+    Callback: function [MI] = compute_MI(env, fn).
+    Compute the mutual information between an environmental probability distribution (with unit spacing) and 
+    the Fisher information in a neural population.
+    Input parameters:
+      env -- vector of environmental probabilities.
+      fn -- Fisher information of a neural population, same size as env. 
+    Output:
+      MI -- vector of mutual information.
+    
+    /helper_function_modeling/compute_MI_new.m.
+    Callback: function [MI] = compute_MI(env_inc, env_dec, r_inc, unit_vals, fnON, fnOFF).
+    Compute the mutual information between an environmental probability distribution (with unit spacing) and 
+    the Fisher information in a neural population.
+    Input paramters:
+      env_inc -- vector of environmental probabilities, increment.
+      env_dec -- vector of environmental probabilities, decrement.
+      r_inc -- rate of increment.
+      unit_vals -- not used.
+      fnON -- Fisher information of a neural ON population.
+      fnOFF -- Fisher information of a neural OFF population. 
+      
+      similar to compute_MI.m with parameters:       
+      env = [r_inc*env_inc (1 - r_inc)*env_dec]; fn = [fnON fnOFF];
+    Output:
+      MI -- vector of mutual information.
+      
+    /helper_function_modeling/compute_fisher.m.
+    Callback: function fn = compute_fisher(resp).
+    Function computes Fisher information of a neuronal population.
+    Input parameters:
+      resp -- neural population.
+    Output:
+    fn -- Fisher information.
+  
+    /helper_function_modeling/determine_matched_gain.m
+    Callback: function [w_off, w_on, esr] = determine_matched_gain(p_on, p_on_opt, popGain).
+    Input parameters:
+      p_on -- ON probability.
+      p_on_opt -- optimal ON probability.
+      popGain -- {2 -- proportional, 1 - same} population gain type.
+    Output:
+      w_on -- weight function for ON gain.  
+      w_off -- weight function for OFF gain.
+      esr -- estimated spike rate.
+    
+    /helper_function_modeling/get_normal_tuning.m.
+    Callback: function resp = gen_normal_tuning(mu, s, pw, x).
+    Function evaluates generalized normal distribution with mean mu, sigma s, and power p over supplied range x.
+    Input parameters:
+      mu -- mean.
+      s -- sigma.
+      p --power.
+      x -- range.
+    Output:  
+      resp -- values of a normal distribution with given parameters.
+  
+    /helper_function_modeling/get_normal_tuning_skew.m.
+    Callback: function resp = gen_normal_tuning_skew(mu, s, pw, k, x)
+    Function evaluates generalized normal distribution with mean mu, sigma s, and power p over supplied range x with skeweness k.
+    Input parameters:
+      mu -- mean.
+      s -- sigma.
+      p --power.
+      k -- skeweness.
+      x -- range.
+    Output:  
+      resp -- values of a normal distribution with given parameters.
+
+    /helper_function_modeling/plot_model.m.
+    Callback: function [] = plot_model(disps,env_inc,env_dec,env_all,pop,warp,N,prefs,resp_inc,resp_dec,gain,fnON,fnOFF)
+    Function plots population model. 
+    Input parameters:
+      disps -- disparities.
+      env_inc -- increment probabilities.
+      env_dec -- decrement probabilities.
+      env_all -- combined [env_inc env_dec].
+      pop -- population vector.
+      warp -- warping function.
+      N -- number of samples.
+      prefs -- environmental probability bias.
+      resp_inc -- population response for increment probabilities.
+      resp_dec -- population response for decrement probabilities.
+      gain -- model gain.
+      fON -- Fisher information for ON probabilities.
+      fnOFF -- Fisher information for ON probabilities.
+    Output:
+      Matlab figure.
+    
+    /build_model_cell_population.m.
+    Callback: function model = build_model_cell_population(env, model).
+    Function creates depth encoding model (information carried in V1 complex cells) as a function of Hebbian learning.
+    Input parameters:
+      env -- structure with information about environmental probabilities.
+      env.rng -- disparity range.
+      model -- structure that contains the following model parameters:
+      model.popDensity -- {'uniform', 'optimal'} -- population probability density.
+      model.popGain -- {'uniform', 'optimal'} -- population gain.
+      model.N -- number of neurons.
+      model.R -- max spiking rate.
+    Output:
+      model -- matlab structure with the following fields:
+      model.popDensity -- {'uniform', 'optimal'} -- population probability density.
+      model.popGain -- {'uniform', 'optimal'} -- population gain.
+      model.N -- number of neurons.
+      model.R -- max spiking rate.
+      model.env -- copy of structure with information about environmental probabilities
+      model.gain -- calculated gain.
+      model.response -- calculated response.
+      model.preferences -- calculated preferences.
+      model.resp_bright -- calculated response to brights.
+      model.resp_dark -- calculated response to darks.
+  
+    Function calls make_warping_function.m, gaussian_tuning.m, set_response_gain.m.  
+    Function is called by predict_model_response.m and DoAnalysis/model_brain.m.
+    
+    /gaussian_tuning.m.  
+    Callback: function resp = gaussian_tuning(mu, s, x)
+    Function evaluates a gaussian distribution.
+    Input parameters:
+      mu -- mean of the distribution.
+      s -- sigma of the distribution.
+      x -- range.
+    Output:
+      resp -- evaluate gaussian distribution with mean u and sigma s over supplied range x.
+
+    Function is called by build_model_cell_population.m.
+ 
+    /get_environ_stats.m.
+    Callback: function env = get_environ_stats(env).
+    Function creates a structure with statistical distributions for brights, darks, and overall for the feature. 
+    Input parameters:
+      env -- structure with the following fields:
+       env.feature -- {'f'/uniform, 'disp'/disparity based} type of environmental probability distribution.
+    Output:
+      env.feature -- {'f'/uniform, 'disp'/disparity based} type of environmental probability distribution.
+     env.rng -- disparity range.
+      env.bright -- probability distribution of brights.
+      env.dark -- probability distribution of brights;
+      env.all -- probability distribution overall.
+  
+    Called by example_create_model.m, predict_model_response.m, DoAnalysis/model_brain.m.
+  
+    /make_gaussian_rf.m
+    Callback: function filt = make_gaussian_rf(x,sig).
+    Function creates gaussian receptive field for given range with given sigma.
+    Input parameters:
+      x -- range (vector).
+      sig -- sigma (number).
+    Output
+      filt -- normalized 2D gaussian.
+  
+  
+    /make_warping_function.m.
+    Callback: function warp_n = make_warping_function(pop, rng).
+    Function calculates warping function for an optimal neuronal population.
+    Input parameters:
+      pop -- population vector.
+      rng -- range vecor.
+    Output:
+      warp_n -- warping function.
+    Called by build_model_cell_population.m
+  
+    /plot_tuning_curves.m.
+    Callback: function [] = plot_tuning_curves(model, col).
+    Function plots model parameters.
+    Input parameters:
+      model -- structure with population responses tuning to a particular environmental feature.
+        model.popDensity -- {'uniform', 'optimal'} -- population probability density.
+        model.popGain -- {'uniform', 'optimal'} -- population gain.
+        model.N -- number of neurons.
+        model.R -- max spiking rate.
+        model.env -- copy of structure with information about environmental probabilities
+        model.gain -- calculated gain.
+        model.response -- calculated response.
+        model.preferences -- calculated preferences.
+        model.resp_bright -- calculated response to brights.
+        model.resp_dark -- calculated response to darks.
+      col -- color.
+    Output:
+      Figure.
+  
+    /set_response_gain.m.
+    Callback : function gain = set_response_gain(popGain, env, pref).
+    Function calculates response gain depending on selected population gain.
+    Input parameters:
+      popGain -- {'uniform', 'optimal'} --population gain type.
+      env -- structire with environmental probabilities.
+        env.rng -- vector of probability range.
+        env.bright -- evironmental probabilities for brights.
+        env.dark --  evironmental probabilities for darks.
+        env.all --  evironmental probabilities for all.
+      pref -- preferences vector (range).
+    Output:
+      gain.dark -- response gain for dark values.
+      gain.bright -- response gain for bright values.
+  Called by build_model_cell_population.m.  
+  
+  b) List of /ModelBasedApproach/Scripts stripts related to model's calculations:
+    
+    /calcModel.m.
+    Callback: function brain = calcModel(model, img, dmap, calctype).
+    Function will calculate response of a population model to a given image that has run throught given front-end.
+    Input params:
+      model -- structure with population responses tuning to a particular environmental feature.
+        model.popDensity -- {'uniform', 'optimal'} -- population probability density.
+        model.popGain -- {'uniform', 'optimal'} -- population gain.
+        model.N -- number of neurons.
+        model.R -- max spiking rate.
+        model.env -- copy of structure with information about environmental probabilities
+        model.gain -- calculated gain.
+        model.response -- calculated response.
+        model.preferences -- calculated preferences.
+        model.resp_bright -- calculated response to brights.
+        model.resp_dark -- calculated response to darks.
+      img -- Image in 2D matlab matrix format (height, width).
+      dmap -- depth map in 2D matlab matrix format (height, width).
+      calctype -- {'newRGC', 'oldRGC'} -- type of front-end calculation.
+    Output:
+      brain.image -- structure with the original and processed throught front-end data.
+        brain.image.pixels -- original image  in 2D matlab matrix format (height, width).
+        brain.image.depth -- original depth map in 2D matlab matrix format (height, width).
+        brain.image.rgc -- image, processed throught given front-end in 2D matlab matrix format (height, width).
+        brain.image.disparity -- depth, converted to disparity in 2D matlab matrix format (height, width).
+        brain.image.max -- max value of image.rgc.
+      brain.volume -- difference between 5th and 95th quantile in decoded disparity.
+      brain.disparity -- decoded disparity map, in 2D matlab matrix format (height, width).
+    
+    Function called by predict_model_response.m, DoAnalysis/model_brain.m.
+    Function calls convert_depth_to_disparity.m, convert_depth_to_disparity_old.m,
+    convert_image_to_rgc_response.m, convert_image_to_rgc_response_old.m.
+    
+    /convert_depth_to_disparity.m.
+    Callback: function disparity = convert_depth_to_disparity(depth).
+    Function converts depth map to binocular disparity field.
+    Input parameters:
+      depth -- depth map in 2D matlab matrix format.
+    Output:
+      disparity -- disparity field in 2D matlab matrix format.
+    Function calls :make_gaussian_rf.m. 
+    Function is called by calcModel.m.
+
+    /convert_depth_to_disparity_old.m
+    Callback: function im = convert_depth_to_disparity_old(im).
+    Function converts depth map to binocular disparity field.
+    WARNING: function requires a structure as input. Function performs cropping, so BOTH
+    the original image and the depth map should be PADDED.
+    Function should only be used together with convert_image_to_rgc_response_old.m!
+    
+    Input parameters:
+      im --matlab structure with following data fields:
+        im.pixels -- original image, 2D matlab matrix.
+        im.rgc -- calculated rgc response (old), 2D matlab matrix.
+        im.depth -- original depth map, 2D matlab matrix.
+    Output:
+      im --matlab structure with following data fields:
+        im.pixels -- original image, 2D matlab matrix.
+        im.rgc -- calculated rgc response (old), 2D matlab matrix.
+        im.depth -- original depth map, 2D matlab matrix.
+        im.disparity -- calculated disparity, 2D matlab matrix.
+        im.fixations -- region with simulated fixations.
+        im.depthfilter -- receptive field used for disparity conversion. 
+    
+    Function calls :make_gaussian_rf.m. 
+    Function is called by calcModel.m.
+    
+    /convert_image_to_rgc_response.m.
+    Callback: function im_rgc = convert_image_to_rgc_response(im).
+    Function calculates output of visual front-end (New retina model).
+    Input parameters:
+      im -- original image, 2D matlab matrix..
+    Output:
+      im_rgc -- image processed by visual front-end, 2D matlab matrix.
+    
+    Function calls :make_gaussian_rf.m .
+    Function is called by calcModel.m.
+  
+    /convert_image_to_rgc_response_old.m.
+    Callback: function im = convert_image_to_rgc_response_old(im).
+    Function calculates output of visual front-end (OLD retina model).
+    WARNING: Function requires a structrure for input, BOTH image and the depth map MUST be padded.
+      Input parameters:
+    Input parameters:
+      im --matlab structure with following data fields:
+        im.pixels -- original image, 2D matlab matrix.
+        im.depth -- original depth map, 2D matlab matrix.
+    Output:
+      im --matlab structure with following data fields:
+        im.pixels -- original image, 2D matlab matrix.
+        im.rgc -- calculated rgc response (old), 2D matlab matrix.
+        im.depth -- original depth map, 2D matlab matrix.
+        im.max -- max value.
+        im.filter -- receptive field used for visual front-end.
+    Function calls :make_gaussian_rf.m .
+    Function is called by calcModel.m.
+  
+  
+  c) List of /ModelBasedApproach/Scripts example stripts.
+  
+    /example_model_based_approach.m
+    Callback: function example_model_based_approach().
+    Function creates calls predict_model_response in testing mode for 5 times,
+    and compares the results of modeling with 5 randomly generated ratings.
+    Output:
+      Ratings vs Model predictions plot.
+    
+    /predict_model_response.m.
+    Callback: function [brain] = predict_model_response(image_name, testing, picture, trueplot).
+    Function applies population to a given image.
+    Input parameters:
+      image_name -- image from 3D databse, not implemented for now. 
+      testing -- use test image generation.
+      picture -- simulate picture state (2D experiment), always on for now.
+      trueplot -- pot options.
+    Output:
+      brain.image -- structure with the original and processed throught front-end data.
+        brain.image.pixels -- original image  in 2D matlab matrix format (height, width).
+        brain.image.depth -- original depth map in 2D matlab matrix format (height, width).
+        brain.image.rgc -- image, processed throught given front-end in 2D matlab matrix format (height, width).
+        brain.image.disparity -- depth, converted to disparity in 2D matlab matrix format (height, width).
+        brain.image.max -- max value of image.rgc.
+      brain.volume -- difference between 5th and 95th quantile in decoded disparity.
+      brain.disparity -- decoded disparity map, in 2D matlab matrix format (height, width).
+    
+    Function calls get_environ_stats.m, build_model_cell_population.m, calls calcModel.m.
+    Function is called by example_model_based_approach.m.
+    
+    /example_create_model.m
+    Callback: function model =example_create_model().
+    Function returns a population model.
+      Output:
+        model -- population model, based on environmental probabilities, derived from natural scene statistics.
+        model.popDensity -- {'uniform', 'optimal'} -- population probability density.
+        model.popGain -- {'uniform', 'optimal'} -- population gain.
+        model.N -- number of neurons.
+        model.R -- max spiking rate.
+        model.env -- copy of structure with information about environmental probabilities
+        model.gain -- calculated gain.
+        model.response -- calculated response.
+        model.preferences -- calculated preferences.
+        model.resp_bright -- calculated response to brights.
+        model.resp_dark -- calculated response to darks.
+    Function calls  alls get_environ_stats.m, build_model_cell_population.m.   
+
