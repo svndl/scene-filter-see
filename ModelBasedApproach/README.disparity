@@ -9,7 +9,7 @@ III. Running the code.
   a) Call syntax is model_output = calcModel(population_model, input_image, input_depth_map, RGC_Type).
   Function is located in calcModel.m matlab file. 
   b) Input arguments description: 
-  population_model -- matlab structure, that contains population curves. Example can be found at example_create_model.m.
+  population_model -- matlab structure, that contains population response model. Example can be found at example_create_model.m.
   input_image -- image file in 2d matlab matrix.
   input_depth_map -- 2d matlab matrix, same size as input image. Can be all zeros.
   RGC_Type -- type of front-end processing. Current options are 'oldRGC' (basic DOG model) or 'newRGC' (Croner-Kaplan DOG model).
