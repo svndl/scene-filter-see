@@ -14,11 +14,11 @@ III. Running the code.
   input_depth_map -- 2d matlab matrix, same size as input image. Can be all zeros.
   RGC_Type -- type of front-end processing. Current options are 'oldRGC' (basic DOG model) or 'newRGC' (Croner-Kaplan DOG model).
   
-  c) Output argument description. 
+  c) Output argument description.
     model_output is a matlab structure that contains the following data, accessible by point (.) operator.
-    model_output.image is a sub-structrure with input and processed input:
+    model_output.image is a sub-structrure that contains original data and results of visual front-end processing:
+      model_output.image.pixels -- copy of input image, 2D matlab matrix.
       model_output.image.rgc -- output of visual front-end. Same size as the original image.
-      model_output.image.pixels -- copy of input image.
       model_output.image.depth -- copy of input depth map.
       model_output.image.disparity -- depth map, converted to disparity units.
       model_output.image.max -- max pixel value.
@@ -27,7 +27,8 @@ III. Running the code.
   
   e) Examples of running the code can be found in example_model_based_approach.m and predict_model_response.m. 
 
-  f) Correlating the model's output with the perceptual data is done by DoAnalysis/do_analysis.m function.
+  f) Correlating the model's output with the perceptual data is done by running the DoAnalysis/do_analysis.m function and 
+  following the on-screen instructions.
 
 IV. Structure.
 For more info see readme.structure.
@@ -57,7 +58,8 @@ make_gaussian_rf.m
 make_warping_function.m
 plot_tuning_curves.m
 set_response_gain.m
-Scripts/helper_function_modeling:
+
+Scripts/helper_function_modeling (not used for model's construction):
 compute_fisher.m
 compute_MI.m
 compute_MI_new.m
