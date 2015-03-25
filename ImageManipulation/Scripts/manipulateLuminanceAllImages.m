@@ -22,7 +22,7 @@ function manipulateLuminanceAllImages
 
     for m = 1:length(manipulationFlags)
     
-        for l = 1:length(listing)
+        for l = 1:length(listing) 
         
             if ~strcmp(listing(l).name(1),'.') %only red directories
                 display([listing(l).name ' manipulating ' manipulationFlags{m}]);

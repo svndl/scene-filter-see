@@ -46,27 +46,29 @@ elseif (~loadit || ~checkit)
     %we use growing structure, not good
     
     % load in image and perceptual data
-    for x = 1:nImages                                        % for each image    
+    n_percept = 1;
+    for x = 1:nImages
+        img_all(x)    = load_image_data(paths, all_images(x).name);  % get image and depth map for analysis
         sn = find(ismember(dat.scenesListSorted, all_images(x).name));  % get index in perceptual data
         if (sn)
             display(['Loading ' all_images(x).name '...']);
-            percept     = process_perceptual_data(percept, dat, trl, sn, x); % compute percent more 3D for each comparison
-            img(x)    = load_image_data(paths, percept.scene_name{x});  % get image and depth map for analysis
-            
+            img(n_percept) = img_all(x);             
+            percept     = process_perceptual_data(percept, dat, trl, sn, n_percept); % compute percent more 3D for each comparison
+            n_percept = n_percept + 1; 
         end
     end
 
-    save([paths.results '/analysis_results.mat'],'paths','percept','img');
+    save([paths.results '/analysis_results.mat'],'paths','percept','img', 'img_all');
 end
 %% II. Ask for user input
 str_opt1 = 'Press 1 to run image-based luminance/depth correlation analysis \n';
 str_opt2 = 'Press 2 to run image-based coarse-to-fine depth correlation analysis \n';
 str_opt3 = 'Press 3 to run brain response based analysis modeling picture viewing \n';
-str_opt4 = 'Press 4 to run brain response based analysis modeling world viewing \n';
-str_opt5 = 'Press 5 to run the image enhancement manipulation only, no analysis \n';
-str_opt6 = 'Press 0 to quit\n';
+%str_opt4 = 'Press 4 to run brain response based analysis modeling world viewing \n';
+str_opt4 = 'Press 4 to run the image enhancement manipulation only, no analysis \n';
+str_opt5 = 'Press 0 to quit\n';
 
-fprintf([str_opt1, str_opt2, str_opt3, str_opt4, str_opt5, str_opt6]);
+fprintf([str_opt1, str_opt2, str_opt3, str_opt4, str_opt5]);
 
 str_prompt = 'Your choise is: ';
 usr_input = input(str_prompt);
@@ -126,26 +128,26 @@ switch usr_input
         
         % generate figure illustrating brain model
         do_plot_model(paths, model, brain);
+%     case 4
+%         str_prompt = 'Load precomputed brain model results? Y/N [Y]';
+%         
+%         try
+%             load_str = input(str_prompt, 's');
+%         catch err
+%             load_str = 'Y';
+%         end
+%         loadBrain = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
+%         
+%         checkBrain = exist([paths.results '/brain_model_results_world.mat'],'file');
+%         if (loadBrain && checkBrain)
+%             fprintf('Loading precomputed brain model based analysis \n');
+%             load([paths.results '/brain_model_results_world.mat'])
+%         else
+%             fprintf('Running brain model based world analysis \n');
+%             [model, brain, pred] = model_brain(img,paths,0);
+%         end
+%         do_plot(pred, percept, paths, 'Model-Based Brain World Responses', [-0.0001 0.0001],0);
     case 4
-        str_prompt = 'Load precomputed brain model results? Y/N [Y]';
-        
-        try
-            load_str = input(str_prompt, 's');
-        catch err
-            load_str = 'Y';
-        end
-        loadBrain = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
-        
-        checkBrain = exist([paths.results '/brain_model_results_world.mat'],'file');
-        if (loadBrain && checkBrain)
-            fprintf('Loading precomputed brain model based analysis \n');
-            load([paths.results '/brain_model_results_world.mat'])
-        else
-            fprintf('Running brain model based world analysis \n');
-            [model, brain, pred] = model_brain(img,paths,0);
-        end
-        do_plot(pred, percept, paths, 'Model-Based Brain World Responses', [-0.0001 0.0001],0);
-    case 5
         fprintf('Performing luminance manipulation and no other analyses \n');
         manipulateLuminanceAllImages;
     otherwise
@@ -171,9 +173,10 @@ if(strcmp(current_folder,'DoAnalysis'))
     
 else
     warning('You are not in the scene-filter-see home directory, looking for the full path');
-    m_userpath = userpath;
+    m_userpath = strtok(userpath, ':');
     % get the ':' out of userpath
-    paths.home = strcat(m_userpath(1:end - 1), '/scene-filter-see/');
+    
+    paths.home = strcat(m_userpath, '/scene-filter-see/');
     
     if(exist(paths.home,'dir'))
         addpath(genpath(paths.home));

@@ -1,0 +1,35 @@
+1) Description of stimulus conditions.
+
+Three types of stimuli were presented: 
+
+Original 2D images (n=30), 
+Enhanced versions (DMD algorithm, n=30)
+3D versions of the same images (n=30) 
+
+These three types of images were presented as pairs of images of the same scene. 
+
+Condition 1 Enhanced then Original Ñ Enhanced version of scene was shown first, Original version of the scene was shown second. 
+
+Condition 2 Enhanced then Stereo Ñ Enhanced version of scene was shown first, Stereo version of the scene was shown second. 
+
+Condition 3 Original then Enhanced Ñ Original version of scene was shown first, Enhanced version of the scene was shown second. 
+
+Condition 4 Original then Stereo Ñ Original version of scene was shown first, Stereo version of the scene was shown second. 
+
+Condition 5 Stereo then Enhanced Ñ Stereo version of scene was shown first, Enhanced version of the scene was shown second. 
+
+Condition 6 Stereo then Original Ñ Stereo version of scene was shown first, Original version of the scene was shown second. 
+
+
+2)Trial description.
+
+For each trial two different versions of the same scene were used, we will refer to them as First Image and Second Image.
+Each trial lasts 2 seconds(2000 msec). 
+ 
+[0, 500 msec] Ñ displayed a black screen with the fixation cross.
+[501 msec, 1000 msec] Ñ displayed the First Image with the fixation cross. 
+[1001 msec, 1500 msec] Ñ displayed a black screen with the fixation cross.
+[1501 msec, 2000 msec] Ñ displayed the Second Image with the fixation cross. 
+
+
+The order of the conditions was randomized. Each of the 30 scenes in each condition was shown twice.Scene list1 mb_rocks12 mb_playtable3 mb_recycle4 mb_cloth5 mb_playroom6 mb_art7 mb_cable8 mb_classroom9 mb_sticks10 mb_rocks211 mb_shelves12 mb_pipes13 mb_piano14 mb_books15 mb_monopoly16 mb_mask17 mb_bicycle18 mb_backpack19 mb_sword220 mb_laundry21 mb_flowerpots22 mb_moebius23 mb_motorcycle24 mb_sword125 mb_umbrella26 mb_aloe27 mb_adirondack28 mb_bowling29 mb_vintage30 mb_dolls
