@@ -121,13 +121,13 @@ switch usr_input
             load([paths.results '/brain_model_all_picture.mat'])
         else
             fprintf('Running brain model based picture analysis \n');
-            [model, brain, pred] = model_brain(img, paths, 1);
+            [~, brain, pred] = model_brain(img, paths, 1);
         end
         
         do_plot(pred, percept, paths,'Model-Based Brain Picture Responses',[-0.0001 0.0001],0);
         
         % generate figure illustrating brain model
-        do_plot_model(paths, model, brain);
+        do_plot_model(paths, brain, img);
 %     case 4
 %         str_prompt = 'Load precomputed brain model results? Y/N [Y]';
 %         

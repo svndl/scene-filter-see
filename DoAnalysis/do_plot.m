@@ -1,9 +1,8 @@
-function do_plot(pred,percept,paths,title,limX,pyr)
+function do_plot(pred,percept,paths,title0,limX,pyr)
 %
 % plot whole iamge luminance depth correlation predictors
 
-f = setupfig(6,6.5,10); hold on; suptitle(title);
-
+f = setupfig(6, 6.5, 10); hold on; suptitle(title0);
 if ~pyr
     
     % concat all conditions for regression
@@ -45,11 +44,11 @@ else
     
 end
 try
-    export_fig([paths.results '/' title '.pdf']);
+    export_fig([paths.results '/' title0 '.pdf']);
 catch err
-    saveas(f, strcat(paths.results, '/', title, '.pdf'), 'pdf');
+    saveas(f, strcat(paths.results, '/', title0, '.pdf'), 'pdf');
 end
-display([ title 'plot has been generated and saved to Results'])
+display([ title0 'plot has been generated and saved to Results'])
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
