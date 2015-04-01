@@ -43,10 +43,11 @@ else
     end
     
 end
+savestr = fullfile(paths.results, [title0 '.pdf']);
 try
-    export_fig([paths.results '/' title0 '.pdf']);
-catch err
-    saveas(f, strcat(paths.results, '/', title0, '.pdf'), 'pdf');
+    export_fig(savestr);
+catch
+    saveas(f, savestr, 'pdf');
 end
 display([ title0 'plot has been generated and saved to Results'])
 

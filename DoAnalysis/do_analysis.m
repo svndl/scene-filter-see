@@ -22,7 +22,7 @@ end
 loadit = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
 paths  = setup_path;    % add all subfolders to your path
 % look for precomputed data
-checkit =  exist([paths.results '/analysis_results.mat'],'file');
+checkit =  exist(fullfile(paths.results, 'analysis_results.mat'),'file');
 
 %% I. Loading current/pre-computed data
 
@@ -30,14 +30,14 @@ checkit =  exist([paths.results '/analysis_results.mat'],'file');
 if(loadit && checkit)
     
     fprintf('Loading precomputed image data...\n');
-    load([paths.results '/analysis_results.mat']);                      % basic image and perceptual data already processed
+    load(fullfile(paths.results, 'analysis_results.mat'));                      % basic image and perceptual data already processed
 
 % we don't want to load the data/it doesn't exist    
 elseif (~loadit || ~checkit)
     fprintf('Loading original, enhanced, and degraded image sets \n');
 
     % set up
-    all_images  = list_folder([paths.images '/Originals']);             % list all of the images available to analyze
+    all_images  = list_folder(fullfile(paths.images, 'Originals'));             % list all of the images available to analyze
     [dat,trl]   = load_perceptual_data(paths);                          % load mat-file w. perceptual experiment data
     percept     = [];
     nImages = length(all_images);
@@ -58,7 +58,7 @@ elseif (~loadit || ~checkit)
         end
     end
 
-    save([paths.results '/analysis_results.mat'],'paths','percept','img', 'img_all');
+    save(fullfile(paths.results, 'analysis_results.mat'), 'paths', 'percept', 'img', 'img_all');
 end
 %% II. Ask for user input
 str_opt1 = 'Press 1 to run image-based luminance/depth correlation analysis \n';
@@ -91,10 +91,10 @@ switch usr_input
         end
         
         loadPyr = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
-        checkPyr = exist([paths.results '/image_pyramid_results_picture.mat'],'file');
+        checkPyr = exist(fullfile(paths.results, 'image_pyramid_results_picture.mat'),'file');
         if (loadPyr && checkPyr)
             fprintf('Loading precomputed image pyramid analysis \n');
-            load([paths.results '/image_pyramid_results_picture.mat']);
+            load(fullfile(paths.results, 'image_pyramid_results_picture.mat'));
         else
             fprintf('Running coarse-to-fine luminance/depth correlation analysis \n');
             pred = image_pyramid(img, paths);
@@ -112,13 +112,13 @@ switch usr_input
         end
         loadBrain = strcmp(load_str, 'y') || strcmp(load_str, 'Y');
         
-        checkBrain1 = exist([paths.results '/brain_model_results_picture.mat'],'file');
-        checkBrain2 = exist([paths.results '/brain_model_all_picture.mat'],'file');
+        checkBrain1 = exist(fullfile(paths.results, 'brain_model_results_picture.mat'), 'file');
+        checkBrain2 = exist(fullfile(paths.results, 'brain_model_all_picture.mat'), 'file');
 
         if (loadBrain && checkBrain1 && checkBrain2)
             fprintf('Loading precomputed brain model based analysis \n');
-            load([paths.results '/brain_model_results_picture.mat'])
-            load([paths.results '/brain_model_all_picture.mat'])
+            load(fullfile(paths.results, 'brain_model_results_picture.mat'));
+            load(fullfile(paths.results, 'brain_model_all_picture.mat'));
         else
             fprintf('Running brain model based picture analysis \n');
             [~, brain, pred] = model_brain(img, paths, 1);
@@ -176,7 +176,7 @@ else
     m_userpath = strtok(userpath, ':');
     % get the ':' out of userpath
     
-    paths.home = strcat(m_userpath, '/scene-filter-see/');
+    paths.home = fullfile(m_userpath, 'scene-filter-see');
     
     if(exist(paths.home,'dir'))
         addpath(genpath(paths.home));
@@ -184,10 +184,10 @@ else
     
 end
 
-paths.images    = [paths.home 'ImageManipulation/Images'];
-paths.exp       = [paths.home 'PerceptualExperiment/Data'];
-paths.results   = [paths.home 'DoAnalysis/Results'];
-paths.env       = [paths.home 'ModelBasedApproach/EnvironStats'];
+paths.images    = fullfile(paths.home, 'ImageManipulation', 'Images');
+paths.exp       = fullfile(paths.home, 'PerceptualExperiment', 'Data');
+paths.results   = fullfile(paths.home, 'DoAnalysis', 'Results');
+paths.env       = fullfile(paths.home, 'ModelBasedApproach', 'EnvironStats');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -197,7 +197,7 @@ function [dat,trl] = load_perceptual_data(paths)
 %
 % load in perceptual data for images
 
-exp  = load([paths.exp '/mainExperimentData.mat']);  % load mat-file w. all perceptual experiment data
+exp  = load(fullfile(paths.exp, 'mainExperimentData.mat'));  % load mat-file w. all perceptual experiment data
 
 % shortcut for trials
 dat = exp.data;
@@ -251,16 +251,16 @@ function img = load_image_data(paths,image_name)
 
 img.name      = image_name;
 
-img.orig.RGB  = imread_double([paths.images '/TowardsThePrior/' img.name '/right_original.png'],8);     % RGB image
-img.orig.V    = imread_double([paths.images '/TowardsThePrior/' img.name '/right_Voriginal.png'],8);    % Luminance image
+img.orig.RGB  = imread_double(fullfile(paths.images, 'TowardsThePrior', img.name, 'right_original.png'), 8);     % 8-bit RGB image
+img.orig.V    = imread_double(fullfile(paths.images, 'TowardsThePrior', img.name, 'right_Voriginal.png'), 8);    % Luminance image
 
-img.enh.RGB   = imread_double([paths.images '/TowardsThePrior/' img.name '/right_tp.png'],8);
-img.enh.V     = imread_double([paths.images '/TowardsThePrior/' img.name '/right_Vtp.png'],8);
+img.enh.RGB   = imread_double(fullfile(paths.images, 'TowardsThePrior', img.name, 'right_tp.png'), 8);
+img.enh.V     = imread_double(fullfile(paths.images, 'TowardsThePrior', img.name, 'right_Vtp.png'), 8);
 
-img.deg.RGB   = imread_double([paths.images '/AgainstThePrior/' img.name '/right_ap.png'],8);
-img.deg.V     = imread_double([paths.images '/AgainstThePrior/' img.name '/right_Vap.png'],8);
+img.deg.RGB   = imread_double(fullfile(paths.images, 'AgainstThePrior', img.name, 'right_ap.png'), 8);
+img.deg.V     = imread_double(fullfile(paths.images, 'AgainstThePrior', img.name, 'right_Vap.png'), 8);
 
-img.depth     = load([paths.images '/TowardsThePrior/' img.name '/OtherManipulationInfo/' img.name 'right_depthmapOriginal.mat']);
+img.depth     = load(fullfile(paths.images, 'TowardsThePrior', img.name, 'OtherManipulationInfo', [img.name 'right_depthmapOriginal.mat']));
 img.depth     = img.depth.imZOrig;
 
 

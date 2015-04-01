@@ -3,17 +3,9 @@ function manipulateLuminanceAllImages
 % This function runs the manipulatLuminance function on all scenes
 % contained in the Images/Originals directory
 
-% Emily Cooper, Stanford University 2014
-    mpath = strtok(userpath, ':');
-    abs_path = strcat(mpath, '/scene-filter-see/ImageManipulation/Images/Originals');
-    rel_path = '../Images/Originals';
-
-    %figure out path locations
-    if(exist(rel_path, 'dir'))
-        path = rel_path;
-    else
-        path = abs_path;
-    end
+% Emily Cooper, Alexandra Yakovleva, Stanford University 2014
+    mpath = strtok(userpath, pathsep);
+    path = fullfile(mpath, 'scene-filter-see', 'ImageManipulation', 'Images', 'Originals');
     
     %store luminance/depth correlation of original and manipulation in a mat file
     calcAndStoreCorrelations = 1;
@@ -26,7 +18,7 @@ function manipulateLuminanceAllImages
         
             if ~strcmp(listing(l).name(1),'.') %only red directories
                 display([listing(l).name ' manipulating ' manipulationFlags{m}]);
-                res = manipulateLuminance(strcat(path, '/', listing(l).name), manipulationFlags{m});
+                res = manipulateLuminance(fullfile(path, listing(l).name), manipulationFlags{m});
                 saveImages(res, calcAndStoreCorrelations);        
             end
         end

@@ -28,15 +28,15 @@ function cleaned = manipulateLuminance(loadpath, flag)
 
 
     % SET UP OUTPUT DIRECTORY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    found = strfind(loadpath, '/');
+    found = strfind(loadpath, filesep);
     dir_up = loadpath(1:found(end - 1) - 1); %/moving up two folders to the Images level 
     dir_name = loadpath(found(end) + 1:end);
 
     switch flag
         case 'tp'
-            savepath = [dir_up '/TowardsThePrior/' dir_name '/'];
+            savepath = fullfile(dir_up, 'TowardsThePrior', dir_name);
         case 'ap'
-            savepath = [dir_up '/AgainstThePrior/' dir_name '/'];
+            savepath = fullfile(dir_up, 'AgainstThePrior', dir_name);
         otherwise
             error('unknown manipulation flag');
     end

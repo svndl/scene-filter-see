@@ -5,30 +5,15 @@ function DepthLumCorr
 %
 
     %absolute path should always work
-    %check if relative location also works
     
-    mpath = userpath;
-    abs_path = strcat(mpath(1:end - 1),'/scene-filter-see/ImageManipulation/Images/Originals');
-    abs_experiment_path = strcat(mpath(1:end - 1), '/scene-filter-see/PerceptualExperiment/Data');
-
-
-    rel_path = '../Images/Originals';
-    rel_experiment_path = '../../PerceptualExperiment/Data';
-    
-    %figure out path locations
-    if(exist(rel_path, 'dir'))
-        path = rel_path;
-        experiment_path = rel_experiment_path;
-    else
-        path = abs_path;
-        experiment_path = abs_experiment_path;
-    end
-        
+    mpath = strtok(userpath, pathsep);
+    path = fullfile(mpath, 'scene-filter-see', 'ImageManipulation', 'Images', 'Originals');
+    experiment_path = fullfile(mpath, 'scene-filter-see', 'PerceptualExperiment', 'Data');        
     
     listing = dir(path);
     
     % mat-file w. perceptual experiment data
-    main = load([experiment_path '/mainExperimentData.mat']);
+    main = load(fullfile(experiment_path, 'mainExperimentData.mat'));
     
     % shortcut for trials 
     dat = main.data;
@@ -55,7 +40,7 @@ function DepthLumCorr
         end        
         for l = k:length(listing)
             idx = l - k + 1;
-            image_path = strcat(path, '/', listing(l).name);
+            image_path = strcat(fullfile(path, listing(l).name));
                         
             % lookup the scene in perceptual data
             % if found, calculate current correlation values
@@ -115,9 +100,9 @@ function DepthLumCorr
                 trial_orig_ap(idx, 1) = trial_corr_orig_ap;
                 trial_orig_ap(idx, 2) = trial3d_orig_ap;
                 
-                display([num2str(calc_tp_ap(idx, 1),2) '  ' num2str(trial_tp_ap(idx, 1),2)]);
-                display([num2str(calc_tp_orig(idx, 1),2) '  ' num2str(trial_tp_orig(idx, 1),2)]);
-                display([num2str(calc_orig_ap(idx, 1),2) '  ' num2str(trial_orig_ap(idx, 1),2)]);
+                display([listing(l).name ' ' num2str(calc_tp_ap(idx, 1),2) '  ' num2str(trial_tp_ap(idx, 1),2)]);
+                display([listing(l).name ' ' num2str(calc_tp_orig(idx, 1),2) '  ' num2str(trial_tp_orig(idx, 1),2)]);
+                display([listing(l).name ' ' num2str(calc_orig_ap(idx, 1),2) '  ' num2str(trial_orig_ap(idx, 1),2)]);
                 
             end
         end
@@ -157,6 +142,5 @@ function DepthLumCorr
     legend('tp-ap', 'tp-orig', 'orig-ap');
     axis equal;
     
-    %do a print-out difference
 end %eof
     

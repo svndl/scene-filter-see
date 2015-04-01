@@ -60,9 +60,9 @@ pred.enh_orig   = resp_enh - resp_orig;
 pred.orig_deg   = resp_orig - resp_deg;
 
 if picturetrue
-    save([paths.results '/brain_model_all_picture.mat'],'brain')
-    save([paths.results '/brain_model_results_picture.mat'],'model','pred')
+    save(fullfile(paths.results, 'brain_model_all_picture.mat'), 'brain')
+    save(fullfile(paths.results, 'brain_model_results_picture.mat'), 'model','pred')
 else
-    save([paths.results '/brain_model_all_world.mat'],'brain')
-    save([paths.results '/brain_model_results_world.mat'],'model','pred')
+    save(fullfile(paths.results, 'brain_model_all_world.mat'), 'brain')
+    save(fullfile(paths.results, 'brain_model_results_world.mat'), 'model', 'pred')
 end

@@ -20,7 +20,7 @@ for x = 1:length(image)
  
 end
 
-save([paths.results '/image_pyramid_results_picture.mat'],'pred')
+save(fullfile(paths.results,'image_pyramid_results_picture.mat'),'pred')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

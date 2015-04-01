@@ -1,14 +1,16 @@
 function f = plot_pyramid(pyr, dataX0, dataY, pyrname)
     
     % figure true height (exclude NaNs)
-    columns = size(pyr, 2);
-    p0 = pyr(~isnan(pyr));
-    p1 = reshape(p0, length(p0)/columns, columns);
+    
+    p1 = pyr;
+    if (strcmp(pyrname, 'Laplacian'))
+        p1 = pyr(1:end - 1, :);
+    end
     
     pyrH = size(p1, 1);
     
     f = figure('Name', pyrname, 'visible', 'off', 'units','normalized','outerposition',[0 0 1 1]);
-    scales = {' fine scale',  ' mid scale 1', ' mid scale 2', ' coarse scale 1', ' coarsest scale 2'};
+    scales = {' fine scale',  ' mid scale', ' coarse scale', ' coarsest scale'};
     xflabel = 'Relative correlation at ';
     yflabel = '% more 3d';
     fmarkers = {'*', 'd', '+'};
@@ -32,7 +34,7 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     nsets = numel(fmarkers);
     npoints = length(dataX)/nsets;
     
-    subplot(3, 2, plotnum);
+    subplot(5, 1, plotnum);
     axis tight;
     for n = 1:nsets
         sIdx = npoints*(n - 1) + 1;
@@ -60,12 +62,12 @@ function h = plot_level(dataX, dataY, fmarkers, axis_labels, plotnum)
     %minYX = dataY(minInd);
       
     % range for text was determined empirically
-    deltaX = 0.01;
-    tx = 0.5*(maxX - minX) + deltaX;
-    ty1 = 0.43;
-    ty2 = 0.47;
-    pv_str = num2str(pv, 2);
-    rho_str = num2str(rho, 2);
-    text(tx, ty1, strcat('p = ', pv_str(1:4)), 'FontSize',16);
-    text(tx, ty2, strcat('r = ', rho_str(1:4)), 'FontSize',16);
+%     deltaX = 0.01;
+%     tx = 0.5*(maxX - minX) + deltaX;
+%     ty1 = 0.43;
+%     ty2 = 0.47;
+%     pv_str = num2str(pv, 2);
+%     rho_str = num2str(rho, 2);
+%     text(tx, ty1, strcat('p = ', pv_str(1:4)), 'FontSize',16);
+%     text(tx, ty2, strcat('r = ', rho_str(1:4)), 'FontSize',16);
 end

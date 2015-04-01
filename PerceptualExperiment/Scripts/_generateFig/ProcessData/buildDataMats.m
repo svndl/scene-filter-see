@@ -5,29 +5,35 @@ function [] = buildDataMats()
 
 % Emily Cooper, Stanford University 2014
 
+    [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
+    raw_data1_path = fullfile(curr_path, 'RawData');
+    raw_data2_path = fullfile(curr_path, 'RawDataContrast');
+    mpath = strtok(userpath, pathsep);
+    %src_path = fullfile(mpath, 'scene-filter-see', 'ImageManipulation', 'Images', 'Originals');
+    res_path = fullfile(mpath, 'scene-filter-see', 'PerceptualExperiment', 'Data');
+    
+    
 for exp = 1:2
     
     %main experiment
     if exp == 1
-        folder = './RawData/';
-        subjall = {'mza','ltx','mct','txl','mxy','iig','mce','gvd','svm','dat','kmd','yao','cxz','tbj','pjl','pcl','axd','jcu','axm','rxs'};
+        subj_folder = raw_data1_path; 
         
         %these are the conditions we're loading
         data.conditionTypes = {'ap' , 'orig', 'tp', 'stereo'};
         conditionNums  = [-1         0       1       3];
         
     elseif exp == 2
-        folder = './RawDataContrast/';
-        subjall = {'ald','cmy','aes','mdh','eta','asl','tam','mkw','ckg','mgd','kmm','gkt','dxk','kjn','mgt','bmh','hag','mbl','asv','rtb'};
-        
+        subj_folder = raw_data2_path;
+
         %these are the conditions we're loading
         data.conditionTypes = {'ap' , 'orig', 'tp'};
         conditionNums  = [-1        0       1 ];
     end
     
     %load scene correlation info
-    load('../../../../imageManipulation/Scripts/_generateFig/luminanceDepthCorrelations.mat')
-    load('../../../../imageManipulation/Scripts/_generateFig/luminanceDepthVariances.mat')
+    load('luminanceDepthCorrelations.mat')
+    load('luminanceDepthVariances.mat')
     
     %data matrix, each row is an individual trial:
     
@@ -49,13 +55,14 @@ for exp = 1:2
       
     %load data
     %for each subject
-    for s = 1:length(subjall)
+    subj_list = dir(fullfile(subj_folder, '*.mat'));
+    
+    for s = 1:numel(subj_list)
         
-        subj = subjall{s};
-        display(['subject ' num2str(s)]);
+        display(['subject ' subj_list(s).name]);
         
         %get responses
-        load([folder subj '_stims_2.mat'])
+        load(fullfile(subj_folder, subj_list(s).name));
         
         if s == 1
             
@@ -80,7 +87,7 @@ for exp = 1:2
             scene = dat.conds(c).scene;
             
             %find index of this scene in sorted correlation list
-            scene_ind = find(ismember(scenes_sort,['../Images/Originals/' scene ]));
+            scene_ind = find(ismember(scenes_sort, ['..' filesep 'Images' filesep 'Originals' filesep scene ]));
             
             if ~isempty(scene_ind)
                 
@@ -154,9 +161,9 @@ for exp = 1:2
     end
     
     if exp == 1
-        save('../../../Data/mainExperimentData.mat','data')
+        save(fullfile(res_path, 'mainExperimentData.mat'),'data')
     elseif exp == 2
-        save('../../../Data/controlExperimentData.mat','data')
+        save(fullfile(res_path,' controlExperimentData.mat'),'data')
     end
     
     clear data;

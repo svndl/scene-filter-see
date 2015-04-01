@@ -10,7 +10,7 @@ function image = loadImages(path, image)
     % just identical to the right eye image.
     
     %dirname is a full path, we'll need to extract the filename
-    found = strfind(path, '/');
+    found = strfind(path, filesep);
     dir_name = path(found(end) + 1:end);
     db_type = strtok(dir_name, '_');
     
@@ -19,27 +19,27 @@ function image = loadImages(path, image)
         switch db_type
             case 'mb'
                 
-                filename = strcat(path, '/', dir_name);
+                filename = fullfile(path, dir_name);
                 %load files
                 %% MB files #1
                 
-                left{1} = strcat(filename, 'left.png');
-                right{1} = strcat(filename, 'right.png');
-                depth1 = strcat(filename, 'right_depth.png');
-                dmin1 = strcat(path, '/', 'dmin.txt');
+                left{1} = [filename, 'left.png'];
+                right{1} = [filename, 'right.png'];
+                depth1 = [filename, 'right_depth.png'];
+                dmin1 = fullfile(path, 'dmin.txt');
                 
                 %% MB files new
-                left{2} = strcat(path, '/', 'im0.png');
-                right{2} = strcat(path, '/', 'im1.png');
-                depth2 = strcat(path, '/', 'disp1.pfm');
-                dmin2 = strcat(path, '/', 'calib.txt'); 
+                left{2} = fullfile(path, 'im0.png');
+                right{2} = fullfile(path, 'im1.png');
+                depth2 = fullfile(path, 'disp1.pfm');
+                dmin2 = fullfile(path, 'calib.txt'); 
                 
                 %%figure out what set of MB to load
                 l_idx = 2*(~exist(left{1}, 'file')) + (~exist(left{2}, 'file'));
                 r_idx = 2*(~exist(right{1}, 'file')) + (~exist(right{2}, 'file')); 
                 
-                image.imRGB = double(imread(right{r_idx}))/255;
-                image.imRGBLeft = double(imread(left{l_idx}))/255;
+                image.imRGB = double(imread(right{r_idx}))/(2^8 - 1);
+                image.imRGBLeft = double(imread(left{l_idx}))/(2^8 - 1);
     
                 %note that middlebury depth is in disparity units, so we have to convert it
                 %%read depth 
@@ -114,14 +114,14 @@ function image = loadImages(path, image)
             case 'live'
                 
                 %expected full filename and path
-                filename = strcat(path, '/', dir_name);
+                filename = fullfile(path, dir_name);
                 
-                image.imRGB = double(imread(strcat(filename, 'right.png')))/255;
+                image.imRGB = double(imread([filename 'right.png']))/255;
                 image.imRGBLeft = image.imRGB;
         
                 %Assuming that depth map var could be namned anything ...
                 
-                s = load(strcat(filename, 'right_range.mat'));
+                s = load([filename 'right_range.mat']);
                 sf = fieldnames(s);
                 image.imZ = s.(sf{1});
 
@@ -154,10 +154,10 @@ function image = loadImages(path, image)
                 findnumber = strfind(dir_name, '_');
                 filenumber = dir_name(findnumber(end) + 1:end);
                 
-                image.imRGB = double(imread([path '/' 'rImage' filenumber 'V.png']))/255;
-                image.imRGBLeft = double(imread([path '/' 'lImage' filenumber 'V.png']))/255;
+                image.imRGB = double(imread(fullfile(path, ['rImage' filenumber 'V.png'])))/(2^8 - 1);
+                image.imRGBLeft = double(imread(fullfile(path, ['lImage' filenumber 'V.png'])))/(2^8 - 1);
     
-                depth_info = load([path '/' 'rRange' filenumber '.mat']);
+                depth_info = load(fullfile(path, ['rRange' filenumber '.mat']));
                 image.imZ = double(depth_info.range);
        
                 %convert depth to diopters, which are proportionate to disparity

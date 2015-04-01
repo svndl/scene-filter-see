@@ -49,10 +49,10 @@ text(0,72,'B','fontweight','bold');
 plot_tuning_curves(model2,2)
 text(0,72,'C','fontweight','bold');
 
-savestr = strcat(paths.results,'/Model Framework.pdf');
+savestr = strcat(fullfile(paths.results, 'Model Framework.pdf'));
 try
     export_fig(savestr);
-catch err
+catch
     saveas(f1, savestr, 'pdf');
 end
 
@@ -112,11 +112,11 @@ imagesc(flipud(brain(ind).orig.disparity)); colormap gray; axis image off;
 subplot(2,3,3); hold on; title('{\bf D }True depth map')
 imagesc(flipud(image(ind).depth)); colormap cool; axis image off;
 
-savestr = strcat(paths.results,'/Model Example.pdf');
+savestr = strcat(fullfile(paths.results,'Model Example.pdf'));
 
 try
     export_fig(savestr)
-catch err
+catch 
     saveas(f2, savestr, 'pdf');
 end
 

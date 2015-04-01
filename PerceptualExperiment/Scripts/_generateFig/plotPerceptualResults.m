@@ -7,13 +7,13 @@ function [] = plotPerceptualResults()
 
 
 %add path to helpful functions
-addpath('../../../HelperFunctions/','../../../HelperFunctions/export_fig');
+%addpath('../../../HelperFunctions/','../../../HelperFunctions/export_fig');
 
 %main experiment
-main = load('../../Data/mainExperimentData.mat');
+main = load('mainExperimentData.mat');
 
 %control experiment
-cont = load('../../Data/controlExperimentData.mat');
+cont = load('controlExperimentData.mat');
 
 
 %figure 3 panel A - all 6 pairwise condition comparisions for main
