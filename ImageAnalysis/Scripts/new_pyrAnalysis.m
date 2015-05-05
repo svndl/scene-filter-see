@@ -1,4 +1,4 @@
-function pyr = new_pyrAnalysis(image, max_levels, pyramids)
+function pyr = new_pyrAnalysis(im, depth, max_levels, pyramids)
 % Function builds three pyramids(laplacian, wavelet, steerable)
 % for image.imRGB, then reconstructs at each level and correlates with the depth map
 % returns structure pyr.ld_corr(nPyramids, nLevels), pyr.mean_lum, pyr.sf
@@ -19,11 +19,12 @@ function pyr = new_pyrAnalysis(image, max_levels, pyramids)
         pyr.mean_lum = zeros(nPyrs, max_levels);        
         pyr.sf = zeros(nPyrs, max_levels);            
         
-        im = rgb2gray(image.imRGB.^(2.2));
-        %use only valid (~NaN) values for conv            
-        validIdx = ~isnan(image.imZOrig);
-        depth = image.imZOrig(validIdx);
-          
+%         im = rgb2gray(image.imRGB.^(2.2));
+%         %use only valid (~NaN) values for conv            
+%         validIdx = ~isnan(image.imZOrig);
+%         depth = image.imZOrig(validIdx);
+        validIdx = ~isnan(depth);
+        d = depth(validIdx);
         %% build/reconstruct in laplacian, wavelet, steerable pyramids
         for p = 1:nPyrs
             type = pyramids{p};
@@ -32,7 +33,7 @@ function pyr = new_pyrAnalysis(image, max_levels, pyramids)
             rem = im;
             for level = 1:height
                 rem = rem - (reconPyr(type, pIm, pInd, level));
-                pyr.ld_corr(p, level) = corr(depth, rem(validIdx));
+                pyr.ld_corr(p, level) = corr(d, rem(validIdx));
                 pyr.mean_lum(p, level) = mean(mean(normM(rem)));
                 pyr.sf(p, level) = getSFreq(type, pIm, pInd, level);
             end

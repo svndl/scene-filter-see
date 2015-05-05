@@ -1,4 +1,4 @@
-function pyr = pyrAnalysis(image, max_levels, pyramids)
+function pyr = pyrAnalysis(im, d, max_levels, pyramids)
 % Function builds three pyramids(laplacian, wavelet, steerable)
 % for image.imRGB, then reconstructs at each level and correlates with the depth map
 % returns structure pyr.ld_corr(nPyramids, nLevels), pyr.mean_lum, pyr.sf
@@ -19,10 +19,9 @@ function pyr = pyrAnalysis(image, max_levels, pyramids)
         pyr.mean_lum = zeros(nPyrs, max_levels);        
         pyr.sf = zeros(nPyrs, max_levels);            
         
-        im = rgb2gray(image.imRGB.^(2.2));
         %use only valid (~NaN) values for conv            
-        validIdx = ~isnan(image.imZOrig);
-        depth = image.imZOrig(validIdx);
+        validIdx = ~isnan(d);
+        depth = d(validIdx);
           
         %% build/reconstruct in laplacian, wavelet, steerable pyramids
         for p = 1:nPyrs
@@ -50,11 +49,11 @@ end
 % nested local functions
 function [pyrIM, pyrInd] =  buildPyr(ptype, im, height)
     switch ptype
-        case 'Laplacian'
+        case {'l', 'L', 'Laplacian'}
             [pyrIM, pyrInd] = buildLpyr(im, height);
-        case 'Wavelet'
+        case {'w', 'W', 'Wavelet'}
             [pyrIM, pyrInd] = buildWpyr(im, height);
-        case 'Steerable'
+        case {'s', 'S', 'Steerable'}
             [pyrIM, pyrInd] = buildSpyr(im, height);
         otherwise
             pyrIM = 0; 
@@ -63,11 +62,11 @@ function [pyrIM, pyrInd] =  buildPyr(ptype, im, height)
 end
 function img = reconPyr(ptype, pyrIm, pyrInd, level)
     switch ptype
-        case 'Laplacian'
+        case {'l', 'L', 'Laplacian'}
             img = reconLpyr(pyrIm, pyrInd, level);
-        case 'Wavelet'
+        case {'w', 'W', 'Wavelet'}
             img = reconWpyr(pyrIm, pyrInd, 'qmf9', 'reflect1', level, 'all');
-        case 'Steerable'
+        case {'s', 'S', 'Steerable'}
             img = reconSpyr(pyrIm, pyrInd, 'sp1Filters', 'reflect1', level, 'all');
         otherwise
             img = 0;
@@ -75,11 +74,11 @@ function img = reconPyr(ptype, pyrIm, pyrInd, level)
 end
 function height = pyrHeight(ptype, pyrInd)
     switch ptype
-        case 'Laplacian'
-            height = floor(lpyrHt(pyrInd));
-        case 'Wavelet'
+        case {'l', 'L', 'Laplacian'}
+            height = 1 + floor(lpyrHt(pyrInd));
+        case {'w', 'W', 'Wavelet'}
             height = floor(wpyrHt(pyrInd));
-        case 'Steerable'
+        case {'s', 'S', 'Steerable'}
             height = floor(spyrHt(pyrInd));
         otherwise
             height = 0;
@@ -87,11 +86,11 @@ function height = pyrHeight(ptype, pyrInd)
 end
 function sf = getSFreq(ptype, pyrIm, pyrInd, level)
     switch ptype
-        case 'Laplacian'
+        case {'l', 'L', 'Laplacian'}
             sf = 1/pyrInd(level, 2);
-        case 'Wavelet'
+        case {'w', 'W', 'Wavelet'}
             sf = 1/size(wpyrBand(pyrIm, pyrInd, level), 2);
-        case 'Steerable'
+        case {'s', 'S', 'Steerable'}
             sf = 1/size(spyrBand(pyrIm, pyrInd, level), 2);
         otherwise
             sf = 0;
