@@ -41,20 +41,16 @@ function main_runAnalysis
             fprintf('Running ratings luminance/depth correlation analysis \n');
             main_LumDepthCorr_Percept(path);
         case 2
-        
+            main_LumDepthCorr_Scales(path)
             fprintf('Running coarse-to-fine luminance/depth correlation analysis \n');
             
         case 3
-            [img, percept] = main_getRatedScenes('ssvep');
-                        
-            do_plot(pred, percept, path,'Model-Based Brain Picture Responses',[-0.0001 0.0001], 0);   
-            % generate figure illustrating brain model
-            do_plot_model(path, model, brain);
+            main_runModel('ssvep', 'simple');
         case 4
-            [img, percept] = main_getRatedScenes('vep');
+            main_runModel('vep', 'simple');
         case 5
             fprintf('Performing luminance manipulation and no other analyses \n');
-            manipulateLuminanceAllImages;
+            main_manipulateLuminance_dir(path.images);
         otherwise
             fprintf('unknown approach, please try again \n');
             main_runAnalysis;
