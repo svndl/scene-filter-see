@@ -182,8 +182,8 @@ function image = loadUT(path)
     
     % UT images are LINEAR 16-bit PNG files 
                 
-    image.right = double(imread([path filesep 'lImage' filenumber 'V.png']))/(2^16 - 1);
-    image.left = double(imread([path filesep 'rImage' filenumber 'V.png']))/(2^16 - 1);
+    image.right = double(imread([path filesep 'lImage' filenumber '.png']))/(2^16 - 1);
+    image.left = double(imread([path filesep 'rImage' filenumber '.png']))/(2^16 - 1);
     
     depth_info_left = load([path filesep 'lRange' filenumber '.mat']);
     image.zleft = double(depth_info_left.range);
