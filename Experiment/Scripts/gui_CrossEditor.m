@@ -106,7 +106,7 @@ function [] = pb_call(varargin)
     
     name = S.currentScene.name;
     
-    path = main_setPathExperiment;
+    path = main_setPath_Experiment;
     save([path.metadata_gui_scenes filesep 'gui_' S.currentScene.name '.mat'], 'name','right', 'left', 'offset', 'dH', 'offset0');
     
     rx = edit_drawCross(right, 30, -offset);
