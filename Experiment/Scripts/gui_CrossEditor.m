@@ -111,7 +111,7 @@ function [] = pb_call(varargin)
     
     rx = edit_drawCross(right, 30, -offset);
     lx = edit_drawCross(left, 30, offset);
-    d = gui_getDisplay;
+    d = calc_getDisplay;
     shiftH = offset(2) + dH;
     lA = edit_positionScene(lx, d.h, shiftH);
     rA = edit_positionScene(flipdim(rx, 2), d.h, shiftH);
