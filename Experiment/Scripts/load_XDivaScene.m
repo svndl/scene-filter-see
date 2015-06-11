@@ -1,22 +1,46 @@
 function scenes = load_XDivaScene(type)    
     path = main_setPath_Experiment;
 
-    xDivaMatPath = path.metadata_gui_scenes;
-    subList = dir([xDivaMatPath filesep 'gui_' type '*']);
+    %% first, look for the gui scenes
+    search_path = path.metadata_gui_scenes;
+    subList = dir([search_path filesep 'gui_' type '*']);
+    dataType = 'gui';
     
-    nS = length(subList);
-    scenes = cell(nS, 1);
+    %% no gui scenes, check mat scenes folder
+    if (isempty(subList))
+        search_path =  path.matimages;
+        subList = dir([search_path filesep type '*']);
+        dataType = 'mat';
+    end
+    
+    %% no mat scenes, select/manipulate folders from src 
+    if (isempty(subList))
+        search_path =  path.images;
+        subList = dir([search_path filesep type '*']);
+        dataType = 'src';
+    end
+    if (~isempty(subList))
+        s = loadListElements(search_path, subList, dataType);
+    end
+    scenes = s(~cellfun(@isempty, s));
+ end
+
+function s = loadListElements(path, list, dataType)
+    nS = length(list);
+    s = cell(nS, 1);
     
     for i = 1:nS
         try
-            filename = strcat(xDivaMatPath, filesep, subList(i).name);
-            scenes{i} = load(filename);
+            filename = strcat(path, filesep, list(i).name);                            
+            switch dataType
+                case {'gui', 'mat'}
+                    s{i} = load(filename);          
+                case 'src'
+                    s{i} = main_manipulateLuminance_scene(filename, 'tp');
+                otherwise
+            end
         catch
-            % figure out filename (remove gui_ prefix and *.mat extension)
-            [~, p2] = strtok(subList(i).name, '_');
-            filename = p2(2:end - 4);
-            image_path = strcat(path.images, filesep, filename);
-            scenes{i} = main_manipulateLuminance_scene(image_path, 'tp');
+            %do nothing, we'll remove empty cells afterwards
         end
     end
 end
