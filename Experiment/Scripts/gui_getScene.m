@@ -1,8 +1,8 @@
 function xScene = gui_getScene(s)
 
-    [leftA, rightA] = prepScene(s, 'S');
-    offset0 = estimateDisparity(leftA, rightA);
-    d = getDisplay;
+    [leftA, rightA] = edit_prepScene(s, 'S');
+    offset0 = calc_estimateDisparity(leftA, rightA);
+    d = calc_getDisplay;
         
     right = imresize(rightA, [d.v NaN]);
     left = imresize(leftA, [d.v NaN]);
