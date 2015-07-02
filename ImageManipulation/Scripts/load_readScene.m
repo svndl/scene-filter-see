@@ -186,12 +186,29 @@ function image = loadUT(path)
     image.left = double(imread([path filesep 'lImage' filenumber '.png']))/(2^16 - 1);
     
     depth_info_left = load([path filesep 'lRange' filenumber '.mat']);
-    image.zleft = double(depth_info_left.range);
+    %image.zleft = double(depth_info_left.range);
      
     depth_info_right = load([path filesep 'rRange' filenumber '.mat']);
-    image.zright = double(depth_info_right.range);
+    %image.zright = double(depth_info_right.range);
    
+    % find -1 value and replace it with 1.1*max value for the sky
+    rangeInvalidVal = -1;
     
+    % valid values in depth maps are always positive, 
+    % the max value is the most distant one
+    maxRangeL = max(max(depth_info_left.range));
+    maxRangeR = max(max(depth_info_right.range));
+    
+    lRange = double(depth_info_left.range);
+    rRange = double(depth_info_right.range);
+    
+    lRange(lRange == rangeInvalidVal) = maxRangeL*1.1;
+    rRange(rRange == rangeInvalidVal) = maxRangeR*1.1;
+    
+    image.zleft = lRange;
+    image.zright = rRange;
+
+ 
     image.mpd = 0;
     %camera details
     d700_sensor = [36 23.9];
