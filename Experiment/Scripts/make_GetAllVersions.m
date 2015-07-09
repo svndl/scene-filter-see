@@ -1,21 +1,20 @@
 function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, varargin)
 
-    if (nargin ==1)
+    if (nargin == 1)
         background = 0;
     else
         background = varargin{1};
     end
-    
-   
+        
     xDivaPath = path.metadata_gui_scenes;
-    srcPath = path.source;
+    matPath =  path.matimages;
+    srcPath = path.images;
     
     % loading xDiva Stereo modified 
     xDivaFilename = strcat(xDivaPath, filesep, 'gui_', name, '.mat');
     
     % assuming matfile can be anywhere
-    matFilename = strcat(name, '.mat');
-    
+    matFilename = strcat(matPath, filesep, name, '.mat');
     
     if (~exist(matFilename, 'file'))
         image_path = strcat(srcPath, filesep, name);
@@ -25,18 +24,16 @@ function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, vara
         matScene = load(matFilename);
     end
     
+    %by this point we should have the matfile info loaded
+    
     if (~exist(xDivaFilename, 'file'))
-        matScene = load(matFilename);
         xScene = gui_getScene(matScene);
-        save([xDivaPath filesep 'gui_' filename], 'xScene.name','xScene.right', 'xScene.left', 'xScene.offset', 'xScene.dH', 'xScene.offset0');
+        save([xDivaPath filesep 'gui_' name], '-struct', 'xScene');
     else
         xScene = load(xDivaFilename);
     end;
-    [leftE, rightE] = edit_prepScene(matScene, 'E');
-    [leftO, rightO] = edit_prepScene(matScene, 'O');
         
         
-    
     %% STEREO
 
     shiftH = xScene.offset + xScene.dH;        
@@ -45,6 +42,8 @@ function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, vara
     %% 2D
     %sceneE = mkScene(leftE, rightE, 0, 0);
     %sceneO = mkScene(leftO, rightO, 0, 0);
+    [leftE, rightE] = edit_prepScene(matScene, 'E');
+    [leftO, rightO] = edit_prepScene(matScene, 'O');
 
     d = calc_getDisplay;   
     leftEx = mkOne(leftE, xScene.offset);
@@ -69,7 +68,7 @@ function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, vara
 end
 
  function s = mkScene(left, right, offset, shiftH, background)
-    d = getDisplay;   
+    d = calc_getDisplay;   
     
     lxA = mkOne(left, offset);
     rxA = mkOne(right, -offset);
@@ -82,7 +81,7 @@ end
  
  function xs = mkOne(s, offset)
  
-    d = getDisplay;
+    d = calc_getDisplay;
     s1 = imresize(s, [d.v NaN]);
     xs = edit_drawCross(s1, 30, offset);
- end 
+ end
