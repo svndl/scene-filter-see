@@ -1,12 +1,10 @@
-function main_generateStimSet
-    
-    if (~exist('xDIvaStim', 'dir'))
-        mkdir('xDIvaStim')
-    end
-    
+function main_generateStimSet()
+     
     path = main_setPath_Experiment;
-    listOfScenes = dir([path.metadata_gui_scenes filesep type '*']);
-
+    type = 'ut';
+    
+    %by default, use SRC scenes!
+    listOfScenes = dir([path.images filesep type '*']);
     rndScenes = randperm(numel(listOfScenes));
     generateAll(listOfScenes, rndScenes, path);
 
@@ -21,11 +19,14 @@ function generateAll(listOfScenes, rndScenes, path)
     while i <= nStereo
                 
         num = rndScenes(i);
-        disp(['Generating ' listOfScenes(num).name]);
-        fprintf(f, 'Conditions SO:OS, SE:ES, EO:OE Trial %d Scene %s\n', i, listOfScenes(num).name);
+        list_name = listOfScenes(num).name;        
+        disp(['Generating ' list_name]);
         
-        grey = 0.5; 
-        [sceneS, sceneE, sceneO, blank] = make_GetAllVersions(listOfScenes(num).name, path, grey);
+        fprintf(f, 'Conditions SO:OS, SE:ES, EO:OE Trial %d Scene %s\n', i, list_name);
+        
+        grey = 0;
+        
+        [sceneS, sceneE, sceneO, blank] = make_GetAllVersions(list_name, path, grey);
               
         %% SO, OS trials
         write_XDivaStim(path.results_scenes, blank, sceneS, blank, sceneO, 'SO', i);
@@ -43,32 +44,3 @@ function generateAll(listOfScenes, rndScenes, path)
     fprintf(f, 'Set generated on %s', datestr(clock));   
     fclose(f);
 end
-% function GenerateCondition(scenes, ConditionType, rndScenes)
-%     
-%     nStereo = numel(scenes);
-%     
-%     i = 1;
-%     roosterName = ['XDivaStim/ScenesList' ConditionType '.txt'];
-%     f = fopen(roosterName, 'w+');
-%     while i <= nStereo
-%                 
-%         num = rndScenes(i);
-%         
-%         fprintf(f, 'Condition %s  Trial %n Scene %s\n', ConditionType, i, scenes{num}.name);
-%         %% Work on sceneA
-%         
-%         [leftA, rightA] = prepScene(scenes{num}, ConditionType(1));
-%         [leftB, rightB] = prepScene(scenes{num}, ConditionType(2));
-%         [blankA, sceneA] = constructScene(leftA, rightA, ConditionType(1));
-%         [blankB, sceneB] = constructScene(leftB, rightB, ConditionType(2));
-%         createXDivaMatStim('XDivaStim', blankA, sceneA, blankB, sceneB, ConditionType, i);
-%         
-%           i = i + 1;
-%     end
-%     fprintf(f, 'Set generated on %s', datestr(clock));   
-%     fclose(f);
-% end
-
-
-
-
