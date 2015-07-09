@@ -39,7 +39,7 @@ function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, vara
     
     %% STEREO
 
-    shiftH = xScene.offset(2) + xScene.dH;        
+    shiftH = xScene.offset + xScene.dH;        
     sceneS = mkScene(xScene.left, xScene.right, xScene.offset, shiftH, background);
     
     %% 2D
@@ -53,11 +53,11 @@ function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, vara
     leftOx = mkOne(leftO, xScene.offset);
     rightOx = mkOne(rightO, xScene.offset);
     
-    lEA = edit_positionScene(leftEx, d.h, shiftH, background);   
-    rEA = edit_positionScene(flipdim(rightEx, 2), d.h, -shiftH, background);
+    lEA = edit_positionScene(leftEx, d, shiftH, background);   
+    rEA = edit_positionScene(flipdim(rightEx, 2), d, -shiftH, background);
               
-    lOA = edit_positionScene(leftOx, d.h, shiftH, background);   
-    rOA = edit_positionScene(flipdim(rightOx, 2), d.h, -shiftH, background);
+    lOA = edit_positionScene(leftOx, d, shiftH, background);   
+    rOA = edit_positionScene(flipdim(rightOx, 2), d, -shiftH, background);
 
     sceneE = cat(2, lEA, rEA); 
     sceneO = cat(2, lOA, rOA);
@@ -71,11 +71,11 @@ end
  function s = mkScene(left, right, offset, shiftH, background)
     d = getDisplay;   
     
-    lxA = mkOne(left,offset);
+    lxA = mkOne(left, offset);
     rxA = mkOne(right, -offset);
     
-    lA = edit_positionScene(lxA, d.h, shiftH, background);   
-    rA = edit_positionScene(flipdim(rxA, 2), d.h, shiftH, background);
+    lA = edit_positionScene(lxA, d, shiftH, background);   
+    rA = edit_positionScene(flipdim(rxA, 2), d, shiftH, background);
               
     s = cat(2, lA, rA); 
  end
