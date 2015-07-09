@@ -4,7 +4,7 @@ function main_generateStimSet
         mkdir('xDIvaStim')
     end
     
-    path = main_setPath_experiment;
+    path = main_setPath_Experiment;
     listOfScenes = dir([path.metadata_gui_scenes filesep type '*']);
 
     rndScenes = randperm(numel(listOfScenes));
