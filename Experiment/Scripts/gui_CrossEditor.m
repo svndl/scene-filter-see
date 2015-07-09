@@ -219,8 +219,8 @@ function updateSceneHandles(S)
     %update edit field value
     set(S.edX, 'string', num2str(S.currentScene.offset(2)));
     set(S.edY, 'string', num2str(S.currentScene.offset(1)));
-    set(S.edHX, 'string', num2str(S.currentScene.dHX));   
-    set(S.edHY, 'string', num2str(S.currentScene.dHY));   
+    set(S.edHX, 'string', num2str(S.currentScene.dH(1)));   
+    set(S.edHY, 'string', num2str(S.currentScene.dH(2)));   
     
     updateCallbacks(S);
 end
