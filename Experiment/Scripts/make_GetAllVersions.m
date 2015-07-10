@@ -32,50 +32,47 @@ function [sceneS, sceneE, sceneO, sceneB] = make_GetAllVersions(name, path, vara
     else
         xScene = load(xDivaFilename);
     end;
-        
-        
+            
     %% STEREO
 
     shiftH = xScene.offset + xScene.dH;        
-    sceneS = mkScene(xScene.left, xScene.right, xScene.offset, shiftH, background);
+    sceneS = mk3DScene(xScene.left, xScene.right, xScene.offset, shiftH, background);
     
     %% 2D
     %sceneE = mkScene(leftE, rightE, 0, 0);
     %sceneO = mkScene(leftO, rightO, 0, 0);
     [leftE, rightE] = edit_prepScene(matScene, 'E');
     [leftO, rightO] = edit_prepScene(matScene, 'O');
-
-    d = calc_getDisplay;   
-    leftEx = mkOne(leftE, xScene.offset);
-    rightEx = mkOne(rightE, xScene.offset);
-    
-    leftOx = mkOne(leftO, xScene.offset);
-    rightOx = mkOne(rightO, xScene.offset);
-    
-    lEA = edit_positionScene(leftEx, d, shiftH, background);   
-    rEA = edit_positionScene(flipdim(rightEx, 2), d, -shiftH, background);
-              
-    lOA = edit_positionScene(leftOx, d, shiftH, background);   
-    rOA = edit_positionScene(flipdim(rightOx, 2), d, -shiftH, background);
-
-    sceneE = cat(2, lEA, rEA); 
-    sceneO = cat(2, lOA, rOA);
+ 
+    sceneE = mk2DScene(leftE, rightE, xScene.offset, shiftH, background);
+    sceneO = mk2DScene(leftO, rightO, xScene.offset, shiftH, background);
     
     %% blank
     
     blank = background*ones(size(leftE));
-    sceneB = mkScene(blank, blank, xScene.offset, shiftH, background);
+    sceneB = mk2DScene(blank, blank, xScene.offset, shiftH, background);
 end
 
- function s = mkScene(left, right, offset, shiftH, background)
+ function s = mk3DScene(left, right, offset, shiftH, background)
     d = calc_getDisplay;   
     
     lxA = mkOne(left, offset);
     rxA = mkOne(right, -offset);
     
-    lA = edit_positionScene(lxA, d, shiftH, background);   
-    rA = edit_positionScene(flipdim(rxA, 2), d, shiftH, background);
+    lA = edit_positionScene(lxA, [d.v d.h], shiftH, background);   
+    rA = edit_positionScene(flipdim(rxA, 2), [d.v d.h], shiftH, background);
               
+    s = cat(2, lA, rA); 
+ end
+ 
+ function s = mk2DScene(left, right, offset, shiftH, background)
+    d = calc_getDisplay;
+    
+    leftX = mkOne(left, offset);
+    rightX = mkOne(right, offset);
+        
+    lA = edit_positionScene(leftX, [d.v d.h], shiftH, background);   
+    rA = edit_positionScene(flipdim(rightX, 2), [d.v d.h], -shiftH, background);
     s = cat(2, lA, rA); 
  end
  
