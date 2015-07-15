@@ -1,4 +1,4 @@
-function image = load_readScene(path)
+function image = load_readScene(path, flag)
     
     found = strfind(path, filesep);
     dir_name = path(found(end) + 1:end);
@@ -14,10 +14,10 @@ function image = load_readScene(path)
                image = loadLive(path);
                image.imZ = edit_cleanDepth(image.zright);
                image.imRGB = image.right;
-              
             case {'ut','utc'}
                image = loadUT(path);
-               image.imZ = edit_cleanDepth(image.zleft, 1); 
+               image.imZ = edit_cleanDepth_new(image.left, image.zleft, 'jbl');  % options: gauss, usm, jbl, jbl_twc, jbl_adp, or jbl_y
+%                image.imZ = edit_cleanDepth(image.zleft, 4); 
                image.imRGB = image.left;
             otherwise
         end
@@ -184,6 +184,8 @@ function image = loadUT(path)
                 
     image.right = double(imread([path filesep 'rImage' filenumber '.png']))/(2^16 - 1);
     image.left = double(imread([path filesep 'lImage' filenumber '.png']))/(2^16 - 1);
+%     image.right = double(imread([path filesep 'rImage' filenumber '.tif']))/(2^16 - 1);
+%     image.left = double(imread([path filesep 'lImage' filenumber '.tif']))/(2^16 - 1);
     
     depth_info_left = load([path filesep 'lRange' filenumber '.mat']);
     %image.zleft = double(depth_info_left.range);
@@ -202,8 +204,16 @@ function image = loadUT(path)
     lRange = double(depth_info_left.range);
     rRange = double(depth_info_right.range);
     
-    lRange(lRange == rangeInvalidVal) = maxRangeL*1.1;
-    rRange(rRange == rangeInvalidVal) = maxRangeR*1.1;
+%     lRange(lRange == rangeInvalidVal) = maxRangeL*1.1;
+%     rRange(rRange == rangeInvalidVal) = maxRangeR*1.1;
+
+    if(strcmp(flag, 'ap'))
+        lRange(lRange == rangeInvalidVal) = 0;
+        rRange(rRange == rangeInvalidVal) = 0;
+    else
+        lRange(lRange == rangeInvalidVal) = maxRangeL;
+        rRange(rRange == rangeInvalidVal) = maxRangeR;
+    end
     
     image.zleft = lRange;
     image.zright = rRange;
