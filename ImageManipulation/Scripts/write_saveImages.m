@@ -13,8 +13,8 @@ function write_saveImages(image)
     %% IMPORTANT -- re-apply gamma-correction for display purposes
     
     imwrite((image.imRGB).^(1/2.2), [name_str '_original.png']);
-    imwrite((image.imRGBnew).^(1/2.2), [name_str '_manipulated_' image.flag '.png']);
-    imwrite(imadjust((image.imZ - min(image.imZ(:)))./range(image.imZ(:))),[name_str '_depthImage.png']);
+    imwrite((image.imRGBnew).^(1/2.2), [name_str '_manipulated_' image.flag '_jbl.png']);
+    imwrite(imadjust((image.imZ - min(image.imZ(:)))./range(image.imZ(:))),[name_str '_depthImage_jbl.png']);
         
     %% IMPORTANT -- save everything as a mat-file
     
