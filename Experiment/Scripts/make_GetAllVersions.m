@@ -32,9 +32,10 @@ function varargout = make_GetAllVersions(name, path, list, varargin)
     end;
     nV = numel(list);
     varargout = cell(1, nV + 1);
+    shiftH = xScene.offset + xScene.dH;
+    offset_2d = [0, 0];        
+
     for l = 1:nV
-        shiftH = xScene.offset + xScene.dH;
-        offset_2d = [0, 0];        
         switch list{l}
             case 'S'
                 %% STEREO
@@ -66,7 +67,7 @@ function varargout = make_GetAllVersions(name, path, list, varargin)
     %% blank
     
     blank = background*ones(size(matScene.right));
-    sceneB = mk2DScene(blank, blank, xScene.offset, shiftH, background);
+    sceneB = mk2DScene(blank, blank, offset_2d, offset_2d, background);
     varargout{nV + 1} = sceneB;
 end
 
