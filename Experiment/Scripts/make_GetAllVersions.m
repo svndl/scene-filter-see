@@ -32,7 +32,8 @@ function varargout = make_GetAllVersions(name, path, list, varargin)
     end;
     nV = numel(list);
     varargout = cell(1, nV + 1);
-    shiftH = xScene.offset + xScene.dH;
+%     shiftH = xScene.offset + xScene.dH;
+    shiftH = xScene.dH;
     offset_2d = [0, 0];        
 
     for l = 1:nV
@@ -56,8 +57,8 @@ function varargout = make_GetAllVersions(name, path, list, varargin)
                 image_path = strcat(srcPath, filesep, name);                
                 matSceneD = main_manipulateLuminance_scene(image_path, 'ap');
                 [leftD, rightD] = edit_prepScene(matSceneD, 'D');
-                xSceneD = gui_getScene(matSceneD);
-                %sceneD = mk2DScene(leftD, rightD, xSceneD.offset, shiftH, background);                
+%                 xSceneD = gui_getScene(matSceneD);
+%                 sceneD = mk2DScene(leftD, rightD, xSceneD.offset, shiftH, background);                
                 sceneD = mk2DScene(leftD, rightD, offset_2d, offset_2d, background);                                
                 varargout{l} = sceneD;
             otherwise
@@ -72,16 +73,31 @@ function varargout = make_GetAllVersions(name, path, list, varargin)
 end
 
  function s = mk3DScene(left, right, offset, shiftH, background)
-    d = calc_getDisplay;   
-    
+    d = calc_getDisplay;
+
     lxA = mkOne(left, offset);
     rxA = mkOne(right, -offset);
-    
-    lA = edit_positionScene(lxA, [d.v d.h], shiftH, background);   
-    rA = edit_positionScene(flipdim(rxA, 2), [d.v d.h], shiftH, background);
-              
-    s = cat(2, lA, rA); 
- end
+% 
+%     lA = edit_positionScene(lxA, [d.v d.h], shiftH, background);
+%     rA = edit_positionScene(flipdim(rxA, 2), [d.v d.h], shiftH, background);
+% 
+%     s = cat(2, lA, rA);
+
+    % simple(r) scene shift added by S.T
+    lA = zeros(size(lxA,1),size(lxA,2),3);
+    rA = zeros(size(rxA,1),size(rxA,2),3);
+
+    if(shiftH(2) >= 0)
+        lA(:,1+floor(shiftH(2)/2):size(lxA,2),:) = lxA(:,1:size(lxA,2)-floor(shiftH(2)/2),:);
+        rA(:,1:size(rxA,2)-floor(shiftH(2)/2),:) = rxA(:,1+floor(shiftH(2)/2):size(rxA,2),:);
+    else
+        lA(:,1:size(lxA,2)+floor(shiftH(2)/2),:) = lxA(:,1-floor(shiftH(2)/2):size(lxA,2),:);
+        rA(:,1-floor(shiftH(2)/2):size(rxA,2),:) = rxA(:,1:size(rxA,2)+floor(shiftH(2)/2),:);
+    end
+
+    rA = flipdim(rA, 2);
+    s = cat(2, lA, rA);
+end
  
  function s = mk2DScene(left, right, offset, shiftH, background)
     d = calc_getDisplay;

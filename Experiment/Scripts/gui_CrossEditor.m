@@ -183,16 +183,30 @@ function [] = pb_call(varargin)
     
     name = S.currentScene.name;
     
-    path = main_setPath_Experiment;
+    path = main_setPathExperiment;
     save([path.metadata_gui_scenes filesep 'gui_' S.currentScene.name '.mat'], 'name','right', 'left', 'offset', 'dH', 'offset0');
     
     rx = edit_drawCross(right, 30, [offset(1), - offset(2)]);
     lx = edit_drawCross(left, 30, [offset(1), offset(2)]);
     d = calc_getDisplay;
     shiftH = offset + dH;
-    lA = edit_positionScene(lx, [d.v, d.h], shiftH, 'hv');
-    rA = edit_positionScene(flipdim(rx, 2), [d.v, d.h], shiftH, 'hv');
-   
+%     lA = edit_positionScene(lx,             [d.v, d.h], shiftH, 'hv');
+%     rA = edit_positionScene(flipdim(rx, 2), [d.v, d.h], shiftH, 'hv');
+
+    % simple(r) scene shift added by S.T
+    lA = zeros(size(lx,1),size(lx,2),3);
+    rA = zeros(size(rx,1),size(rx,2),3);
+    
+    if(dH(2) >= 0)
+        lA(:,1+floor(dH(2)/2):size(lx,2),:) = lx(:,1:size(lx,2)-floor(dH(2)/2),:);
+        rA(:,1:size(rx,2)-floor(dH(2)/2),:) = rx(:,1+floor(dH(2)/2):size(rx,2),:);
+    else
+        lA(:,1:size(lx,2)+floor(dH(2)/2),:) = lx(:,1-floor(dH(2)/2):size(lx,2),:);
+        rA(:,1-floor(dH(2)/2):size(rx,2),:) = rx(:,1:size(rx,2)+floor(dH(2)/2),:);
+    end
+    
+    rA = flipdim(rA, 2);    
+
     sceneA = cat(2, lA, rA);
     sceneA = sceneA.^(1/2.2);
     imwrite(sceneA, [path.metadata_gui_scenes filesep 'gui_' S.currentScene.name '.jpeg']);
@@ -214,6 +228,7 @@ function updateCrossPos(S)
     set(S.fh,'CurrentAxes',S.right); imshow(midRight.^(1/2.2));
     updateCallbacks(S);
 end
+
 %will be called when new scene is loaded for the first time
 function updateSceneHandles(S)
     %update edit field value
@@ -224,11 +239,12 @@ function updateSceneHandles(S)
     
     updateCallbacks(S);
 end
+
 function out = getScene(s, pos)
     scene = s{pos};
     if (~isfield(scene, 'offset0'))
         out = gui_getScene(scene);
-        out.offset = floor(0.5*out.offset0);
+        out.offset = -floor(0.5*out.offset0);
         out.dH = [0 0];
     else
        out = scene;
