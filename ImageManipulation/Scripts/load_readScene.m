@@ -182,15 +182,16 @@ function image = loadUT(path)
     
     % UT images are LINEAR 16-bit PNG files 
                 
-    image.right = double(imread([path filesep 'rImage' filenumber '.png']))/(2^16 - 1);
+%     image.left = double(imread([path filesep 'lImage' filenumber 'V.png']))/(2^8 - 1);
+%     image.right = double(imread([path filesep 'rImage' filenumber 'V.png']))/(2^8 - 1);
     image.left = double(imread([path filesep 'lImage' filenumber '.png']))/(2^16 - 1);
-%     image.right = double(imread([path filesep 'rImage' filenumber '.tif']))/(2^16 - 1);
+    image.right = double(imread([path filesep 'rImage' filenumber '.png']))/(2^16 - 1);
 %     image.left = double(imread([path filesep 'lImage' filenumber '.tif']))/(2^16 - 1);
+%     image.right = double(imread([path filesep 'rImage' filenumber '.tif']))/(2^16 - 1);
     
     depth_info_left = load([path filesep 'lRange' filenumber '.mat']);
-    %image.zleft = double(depth_info_left.range);
-     
     depth_info_right = load([path filesep 'rRange' filenumber '.mat']);
+    %image.zleft = double(depth_info_left.range);
     %image.zright = double(depth_info_right.range);
    
     % find -1 value and replace it with 1.1*max value for the sky
@@ -207,12 +208,12 @@ function image = loadUT(path)
 %     lRange(lRange == rangeInvalidVal) = maxRangeL*1.1;
 %     rRange(rRange == rangeInvalidVal) = maxRangeR*1.1;
 
-    if(strcmp(flag, 'ap'))
+    if strcmp(flag, 'tp')
         lRange(lRange == rangeInvalidVal) = 0;
         rRange(rRange == rangeInvalidVal) = 0;
     else
         lRange(lRange == rangeInvalidVal) = maxRangeL;
-        rRange(rRange == rangeInvalidVal) = maxRangeR;
+        rRange(rRange == rangeInvalidVal) = maxRangeR;        
     end
     
     image.zleft = lRange;
