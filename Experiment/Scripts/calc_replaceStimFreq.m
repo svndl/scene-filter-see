@@ -4,7 +4,7 @@ function calc_replaceStimFreq
     
     freq = 0.5;
     
-    newTotalFrames = xdivaMatlabParadigmCalc(freq);
+    newTotalFrames = calc_XDivaMatlabParadigm(freq);
     framesPerImg = newTotalFrames/4;
     imageSequence = uint32(zeros(newTotalFrames, 1));
     imageSequence(1, 1) = 1;
