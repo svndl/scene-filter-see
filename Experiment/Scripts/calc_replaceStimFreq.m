@@ -1,10 +1,10 @@
 function calc_replaceStimFreq
-    path = main_setPath_Experiment;
-    
+    mpath = main_setPath_Experiment;
     dbtype = 'ut';
-    xDivaStimList = dir([mpath.results_scenes filesep dbtype filesep '*.mat']);
+    scene_path = fullfile(mpath.results_scenes, dbtype);
+    xDivaStimList = dir([scene_path filesep '*.mat']);
     
-    freq = 0.5;
+    freq = 0.375;
     
     newTotalFrames = calc_XDivaMatlabParadigm(freq);
     framesPerImg = newTotalFrames/4;
@@ -18,7 +18,7 @@ function calc_replaceStimFreq
 
     
     for i = 1:numel(xDivaStimList)
-        filepath = [path.results.scenes '/' xDivaStimList(i).name];
+        filepath = fullfile(scene_path, xDivaStimList(i).name);
         replace_imSequence(imageSequence, filepath);
     end
 end
