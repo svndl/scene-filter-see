@@ -1,6 +1,8 @@
 function calc_replaceStimFreq
     path = main_setPath_Experiment;
-    xDivaStimList = dir([path.results.scenes '*.mat']);
+    
+    dbtype = 'ut';
+    xDivaStimList = dir([mpath.results_scenes filesep dbtype filesep '*.mat']);
     
     freq = 0.5;
     
