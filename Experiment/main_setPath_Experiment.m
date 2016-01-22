@@ -1,31 +1,31 @@
-function path =  main_setPath_Experiment
+function ePath =  main_setPath_Experiment
     %
     % add all scene-filter-see subfolders to your path
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
-    path.home = curr_path;
-    addpath(path.home);
+    ePath.home = curr_path;
     filesep_idx = strfind(curr_path, filesep);
     up_dir = curr_path(1:filesep_idx(end));
     
     %default source location
-    path.images   = [up_dir 'SrcData'];
+    ePath.images   = [up_dir 'SrcData'];
     
     %location for matfiles
-    path.metadata   = [path.home filesep 'Data'];
-    path.metadata_eeg = [path.metadata filesep 'EEG'];
-    path.metadata_gui_scenes = [path.metadata filesep 'guiMatScenes'];
-    path.metadata_exp1 = [path.metadata filesep 'PerceptualExperiment_I'];
-    path.metadata_exp2 = [path.metadata filesep 'PerceptualExperiment_II'];
+    ePath.metadata   = [ePath.home filesep 'Data'];
+    ePath.matimages = [up_dir 'ImageManipulation' filesep 'Data'];
+    ePath.metadata_eeg = [ePath.metadata filesep 'EEG'];
+    ePath.metadata_gui_scenes = [ePath.metadata filesep 'guiMatScenes'];
+    ePath.metadata_exp1 = [ePath.metadata filesep 'PerceptualExperiment_I'];
+    ePath.metadata_exp2 = [ePath.metadata filesep 'PerceptualExperiment_II'];
     
     
     %location for results  
-    path.results = [path.home filesep 'Results'];
-    path.results_scenes = [path.results filesep 'XDivaStimsets'];
+    ePath.results = [ePath.home filesep 'Results'];
+    ePath.results_scenes = [ePath.results filesep 'XDivaStimsets'];
 
-    if (~exist(path.metadata, 'dir'))
-        mkdir(path.metadata);
+    if (~exist(ePath.metadata, 'dir'))
+        mkdir(ePath.metadata);
     end
-    if (~exist(path.results, 'dir'))
-        mkdir(path.results);
+    if (~exist(ePath.results, 'dir'))
+        mkdir(ePath.results);
     end
 end
