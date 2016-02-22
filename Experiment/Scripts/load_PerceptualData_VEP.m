@@ -1,9 +1,23 @@
-function [img, ratings] = load_PerceptualData_VEP(path)
-    if(~exist('RatedScenes_VEP.mat', 'file'))
+function [img, ratings] = load_PerceptualData_VEP(path, database, varargin)
+    
+    processed_file = fullfile(path.metadata, database, 'RatedScenes_VEP.mat');
+    if(~exist(processed_file, 'file'))
+        
+        %default parameters
+        cnd = 'EO';
         
         % 'sceneList', 'respMatrix', 'sceneCount'
-        load('Enh-Orig.mat');  % load mat-file w. all perceptual experiment data
+        if (~isempty(varargin))
+            cnd = varargin{1};
+        end
         
+        
+        try
+            load([fullfile(path.results, database, cnd) '.mat']);
+        catch
+            main_processResponses(database)
+            load([fullfile(path.results, database, cnd) '.mat']);            
+        end
         
         ratedImages = length(sceneList);
         %set up structure to keep the rated scenes info
@@ -31,9 +45,12 @@ function [img, ratings] = load_PerceptualData_VEP(path)
             img.names{x} = sceneList{x};
             img.lum_enh_orig(x) = ld_corr(scene_enh.RGB, scene_orig.imZ) - ld_corr(scene_orig.RGB, scene_orig.imZ);
         end
-        save(fullfile(path.metadata, 'RatedScenes_VEP.mat'), '-v7.3', 'img', 'ratings');
+        if (~exist(fullfile(path.metadata, database), 'dir'))
+            mkdir(fullfile(path.metadata, database));
+        end
+        save(fullfile(path.metadata, database, 'RatedScenes_VEP.mat'), '-v7.3', 'img', 'ratings');
     else
-        load(fullfile(path.metadata, 'RatedScenes_VEP.mat'));
+        load(fullfile(path.metadata, database, 'RatedScenes_VEP.mat'));
     end
 end
 

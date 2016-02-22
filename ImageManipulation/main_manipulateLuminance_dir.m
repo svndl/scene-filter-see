@@ -18,22 +18,22 @@ function main_manipulateLuminance_dir(varargin)
     
     
     path = main_setPath_Manipulation;
-    manipulationFlags = {'tp'};    
+    manipulationFlags = {'tp'};
     
     if (nargin ==0)
         %standalone call
-        path.source = uigetdir('/');
+        user_source = uigetdir('/');
+        
+        %check if user input is valid
+        if (exist(user_source, 'dir'))
+            path.source = user_source;
+        end
+        
+        %default flag
+        manipulationFlags = {'tp'};
     else
-        path.source = varargin{1};
-        
-        if (nargin >= 2 )    
-            path.results = varargin{2};
-        end
-        
-        if (nargin >= 3)
-            manipulationFlags = varargin{3};
-        end
-        
+%         path.source = varargin{1};
+%         path.results = varargin{2};
         try
             if (~exist(path.results, 'dir'))
                 mkdir(path.results);
@@ -57,7 +57,7 @@ function main_manipulateLuminance_dir(varargin)
         for l = 1:length(listing)
         
             if ~strcmp(listing(l).name(1),'.') && (listing(l).isdir) %only directories
-                path_to_scene = fullfile(path.source, listing(l).name);
+                path_to_scene = [path.source '/' listing(l).name];
                 main_manipulateLuminance_scene(path_to_scene, manipulationFlags{m});
             end
         end

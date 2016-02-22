@@ -1,6 +1,4 @@
-function main_processResponses
-
-    database = 'Live3D';
+function main_processResponses(database)
     
     switch database
         case 'Middlebury'
@@ -13,9 +11,11 @@ function main_processResponses
     path_experiment = main_setPath_Experiment;
     databasePath = fullfile(path_experiment.metadata_exp2, database);
     resultsPath = fullfile(path_experiment.results, database);
+    
     if (~exist(resultsPath, 'dir'))
         mkdir(resultsPath);
     end
+    
     eC = loadConditions(databasePath);
     eS = loadScenes(databasePath);
   
