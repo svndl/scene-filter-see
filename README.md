@@ -15,7 +15,8 @@ d). Source Images. Stereo images are required to run the code. Current version o
 e). Code modifications. Some modifications of the internal structure, particularly moving, renaming or deleting source image data in /Data folder, or renaming Matlab data files (*.mat* extension) might result in failure to run the main code or any of the sub-functions that rely on loading files with specific name or at specific location. We strongly advise to get familiar with the code prior making any structure modification. 
 
 #2. Running the code.
-	To run the code, open Matlab, select the project’s directory in Matlab directory browser. Enter the scene-filter-see directory or expand the folder content, left-click on *main_DoAnalysis.m* and select “Run”.
+
+To run the code, open Matlab, select the project’s directory in Matlab directory browser. Enter the scene-filter-see directory or expand the folder content, left-click on *main_DoAnalysis.m* and select “Run”.
 	
 Script can also be run from Matlab command line by typing *main_DoAnalysis.m*.
 	Function main_DoAnalysis does not require any input arguments to run, however, it will require user input during the run. Function will set up location, load pre-computed results and provide the options currently available. Results will be saved in */Results* folder.
